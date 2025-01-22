@@ -1,6 +1,14 @@
+![Nine Week Challenge](public/icons/icon-512x512.png)
+
 # Nine Week Challenge
 
+Get Fit Without the Calorie Tracking. Make it Sustainable!
+
+**MINDFUL EATING | HABIT FORMATION | PROGRESS TRACKING**
+
 A comprehensive tracking application for a 9-week health and wellness journey, built with React and TypeScript.
+
+By [Ashraf Ali](https://ashrafali.net)
 
 ## Features
 
@@ -61,4 +69,4 @@ src/
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
