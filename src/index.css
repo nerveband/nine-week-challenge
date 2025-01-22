@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
+    --radius: 0.5rem;
+ 
+    --chart-1: 12 76% 61%;
+ 
+    --chart-2: 173 58% 39%;
+ 
+    --chart-3: 197 37% 24%;
+ 
+    --chart-4: 43 74% 66%;
+ 
+    --chart-5: 27 87% 67%;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Icon alignment */
+  .icon-wrapper {
+    @apply flex items-center justify-center w-5 h-5 flex-shrink-0;
+  }
+
+  .input-icon {
+    @apply w-5 h-5 text-muted-foreground;
+  }
+
+  /* Custom range slider styles */
+  .range {
+    @apply h-2 rounded-full bg-secondary relative;
+  }
+  
+  .range::-webkit-slider-thumb {
+    @apply w-6 h-6 appearance-none bg-primary rounded-full cursor-pointer transition-all 
+           hover:bg-primary/90 hover:ring-4 hover:ring-primary/20 
+           focus:ring-4 focus:ring-primary/40;
+  }
+  
+  .range::-moz-range-thumb {
+    @apply w-6 h-6 border-none bg-primary rounded-full cursor-pointer transition-all 
+           hover:bg-primary/90 hover:ring-4 hover:ring-primary/20 
+           focus:ring-4 focus:ring-primary/40;
+  }
+
+  .range::-webkit-slider-runnable-track {
+    @apply bg-secondary rounded-full h-2;
+  }
+
+  .range::-moz-range-track {
+    @apply bg-secondary rounded-full h-2;
+  }
+
+  /* Custom tooltip styles */
+  .tooltip {
+    @apply relative inline-block;
+  }
+
+  .tooltip:before {
+    @apply content-[attr(data-tip)] absolute whitespace-pre-line text-left px-3 py-2
+           bg-popover text-popover-foreground text-sm rounded-lg opacity-0 transition-all
+           -translate-y-2 pointer-events-none z-50 max-w-xs
+           shadow-lg;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .tooltip:hover:before {
+    @apply opacity-100 -translate-y-1;
+  }
+
+  /* Success message styles */
+  .alert-success {
+    @apply bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-l-4 border-emerald-500;
+  }
+
+  /* Delete confirmation styles */
+  .delete-confirm {
+    @apply bg-destructive/10 border border-destructive/20 text-destructive rounded-lg p-4 
+           transform transition-all duration-200 ease-in-out;
+  }
+
+  .delete-confirm:hover {
+    @apply bg-destructive/20;
+  }
+
+  /* Custom step styles */
+  .step {
+    @apply relative flex h-10 items-center justify-center;
+  }
+
+  .step:before {
+    @apply content-[''] absolute h-0.5 w-full left-0 bg-muted;
+  }
+
+  .step-primary {
+    @apply text-primary;
+  }
+
+  .step-primary:before {
+    @apply bg-primary;
+  }
+
+  /* Weekly measurements card styles */
+  .measurements-card {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .measurement-input-group {
+    @apply flex items-center gap-2 w-full;
+  }
+
+  .measurement-label {
+    @apply flex items-center gap-2 text-muted-foreground font-medium;
+  }
+
+  .measurement-value {
+    @apply text-sm text-muted-foreground;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .icon-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Responsive utilities */
+  .responsive-grid {
+    @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .responsive-container {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .responsive-card {
+    @apply flex flex-col sm:flex-row items-start gap-4;
+  }
+} 
