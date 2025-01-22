@@ -1,4 +1,4 @@
-![Nine Week Challenge](public/icons/icon-512x512.png)
+![Nine Week Challenge](src/assets/banner.png)
 
 # Nine Week Challenge
 
