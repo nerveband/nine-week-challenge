@@ -12,7 +12,7 @@ By [Ashraf Ali](https://ashrafali.net)
 
 ## Daily Tracking Interface
 
-![Daily Tracking Interface](nine-week-challenge-screenshot.png)
+![Daily Tracking Interface](/nine-week-challenge-screenshot.png)
 
 ## Features
 
