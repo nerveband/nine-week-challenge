@@ -10,6 +10,10 @@ A comprehensive tracking application for a 9-week health and wellness journey, b
 
 By [Ashraf Ali](https://ashrafali.net)
 
+## Daily Tracking Interface
+
+![Daily Tracking Interface](nine-week-challenge-screenshot.png)
+
 ## Features
 
 - 📊 Daily tracking of meals, habits, and stats
@@ -31,9 +35,17 @@ By [Ashraf Ali](https://ashrafali.net)
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js v18+
+- npm/yarn/pnpm
+- PocketBase server
+
+### Installation
+
 1. Clone the repository:
 ```bash
-git clone https://github.com/nerveband/nine-week-challenge.git
+git clone https://github.com/yourusername/nine-week-challenge.git
 cd nine-week-challenge
 ```
 
@@ -42,9 +54,41 @@ cd nine-week-challenge
 npm install
 ```
 
-3. Start the development server:
+3. Set up PocketBase:
+   - Download PocketBase from https://pocketbase.io/docs/
+   - Extract and run the PocketBase server:
+     ```bash
+     ./pocketbase serve
+     ```
+   - Create an admin account at http://127.0.0.1:8090/_/
+   - Import the schema:
+     ```bash
+     ./pocketbase import pb_schema.json
+     ```
+
+4. Create a `.env` file:
+```env
+VITE_POCKETBASE_URL=http://127.0.0.1:8090
+```
+
+5. Start the development server:
 ```bash
 npm run dev
+```
+
+### Migration from IndexedDB
+
+If you're migrating from the IndexedDB version:
+
+1. Set up environment variables:
+```bash
+export POCKETBASE_EMAIL=your@email.com
+export POCKETBASE_PASSWORD=your_password
+```
+
+2. Run the migration:
+```bash
+npm run migrate-to-pocketbase
 ```
 
 ## Project Structure
