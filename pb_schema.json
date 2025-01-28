@@ -1,0 +1,318 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "type": "auth",
+      "schema": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "avatar",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "userProfiles",
+      "type": "base",
+      "schema": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "birthdate",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "age",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "height",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "location",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "whyStatement",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "startDate",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "currentPhase",
+          "type": "number",
+          "required": true,
+          "min": 1,
+          "max": 3
+        },
+        {
+          "name": "currentWeek",
+          "type": "number",
+          "required": true,
+          "min": 1,
+          "max": 9
+        },
+        {
+          "name": "avatarUrl",
+          "type": "text"
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_user_profile ON userProfiles (user)"
+      ]
+    },
+    {
+      "name": "dailyTracking",
+      "type": "base",
+      "schema": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "date",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "dailies",
+          "type": "json",
+          "required": true
+        },
+        {
+          "name": "meals",
+          "type": "json",
+          "required": true
+        },
+        {
+          "name": "habits",
+          "type": "json",
+          "required": true
+        },
+        {
+          "name": "treats",
+          "type": "json",
+          "required": true
+        },
+        {
+          "name": "dailyWin",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_user_date ON dailyTracking (user, date)",
+        "CREATE INDEX idx_date ON dailyTracking (date)"
+      ]
+    },
+    {
+      "name": "weeklySummaries",
+      "type": "base",
+      "schema": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "weekNumber",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "startDate",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "endDate",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "measurements",
+          "type": "json",
+          "required": true
+        },
+        {
+          "name": "habitCompliance",
+          "type": "json",
+          "required": true
+        },
+        {
+          "name": "review",
+          "type": "json",
+          "required": true
+        },
+        {
+          "name": "nextWeekGoals",
+          "type": "json",
+          "required": true
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_user_week ON weeklySummaries (user, weekNumber)",
+        "CREATE INDEX idx_week ON weeklySummaries (weekNumber)"
+      ]
+    },
+    {
+      "name": "measurements",
+      "type": "base",
+      "schema": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "date",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "weight",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "chest",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "chest2",
+          "type": "number"
+        },
+        {
+          "name": "waist",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "hips",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "rightArm",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "leftArm",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "rightThigh",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "leftThigh",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "rightCalf",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "leftCalf",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "notes",
+          "type": "text"
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_user_date ON measurements (user, date)",
+        "CREATE INDEX idx_date ON measurements (date)"
+      ]
+    },
+    {
+      "name": "userGoals",
+      "type": "base",
+      "schema": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "sleepHours",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "waterOz",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "steps",
+          "type": "number",
+          "required": true
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_user_goals ON userGoals (user)"
+      ]
+    }
+  ]
+} 

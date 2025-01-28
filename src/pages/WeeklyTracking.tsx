@@ -108,33 +108,80 @@ export function WeeklyTracking() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const userProfile = await databaseService.getUserProfile();
-        if (userProfile) {
-          setCurrentWeek(userProfile.currentWeek);
-          const savedSummary = await databaseService.getWeeklySummary(userProfile.currentWeek);
-          if (savedSummary) {
-            setSummary(savedSummary);
-            // Initialize measurements from saved summary
-            const newMeasurements = { ...measurements };
-            Object.entries(savedSummary.measurements).forEach(([key, value]) => {
-              if (key in newMeasurements && typeof value === 'number') {
-                newMeasurements[key].values = [value];
-                newMeasurements[key].average = value;
-              }
-            });
-            setMeasurements(newMeasurements);
+        setError(null);
+
+        // Get current week's summary if it exists
+        const existingSummary = await databaseService.getWeeklySummary(currentWeek);
+        
+        if (existingSummary) {
+          // If we have an existing summary, use its data
+          setSummary(existingSummary);
+          
+          // Update measurements state from the existing summary
+          const measurementData: Record<string, Measurement> = {
+            chest: { values: [existingSummary.measurements.chest], average: existingSummary.measurements.chest, useAverage: true },
+            waist: { values: [existingSummary.measurements.waist], average: existingSummary.measurements.waist, useAverage: true },
+            hips: { values: [existingSummary.measurements.hips], average: existingSummary.measurements.hips, useAverage: true },
+            rightArm: { values: [existingSummary.measurements.rightArm], average: existingSummary.measurements.rightArm, useAverage: true },
+            leftArm: { values: [existingSummary.measurements.leftArm], average: existingSummary.measurements.leftArm, useAverage: true },
+            rightThigh: { values: [existingSummary.measurements.rightThigh], average: existingSummary.measurements.rightThigh, useAverage: true },
+            leftThigh: { values: [existingSummary.measurements.leftThigh], average: existingSummary.measurements.leftThigh, useAverage: true },
+            rightCalf: { values: [existingSummary.measurements.rightCalf], average: existingSummary.measurements.rightCalf, useAverage: true },
+            leftCalf: { values: [existingSummary.measurements.leftCalf], average: existingSummary.measurements.leftCalf, useAverage: true },
+          };
+          setMeasurements(measurementData);
+        } else {
+          // If no existing summary, initialize with default values
+          const userProfile = await databaseService.getUserProfile();
+          if (!userProfile) {
+            throw new Error('No user profile found');
           }
+
+          // Get the latest measurements for reference
+          const latestMeasurements = await databaseService.getLatestMeasurements();
+
+          // Calculate week dates
+          const today = new Date();
+          const startDate = new Date(today);
+          startDate.setDate(today.getDate() - today.getDay()); // Start of current week (Sunday)
+          const endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() + 6); // End of week (Saturday)
+
+          // Initialize new summary with latest measurements if available
+          setSummary(prev => ({
+            ...prev,
+            userId: userProfile.id,
+            weekNumber: currentWeek,
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: endDate.toISOString().split('T')[0],
+            measurements: {
+              id: crypto.randomUUID(),
+              userId: userProfile.id,
+              date: startDate.toISOString().split('T')[0],
+              weight: latestMeasurements?.weight || 0,
+              chest: latestMeasurements?.chest || 0,
+              waist: latestMeasurements?.waist || 0,
+              hips: latestMeasurements?.hips || 0,
+              rightArm: latestMeasurements?.rightArm || 0,
+              leftArm: latestMeasurements?.leftArm || 0,
+              rightThigh: latestMeasurements?.rightThigh || 0,
+              leftThigh: latestMeasurements?.leftThigh || 0,
+              rightCalf: latestMeasurements?.rightCalf || 0,
+              leftCalf: latestMeasurements?.leftCalf || 0,
+              notes: ''
+            }
+          }));
         }
       } catch (err) {
-        console.error('Error loading weekly data:', err);
-        setError('Failed to load weekly data. Please try refreshing the page.');
+        console.error('Error loading data:', err);
+        setError('Failed to load data. Please try again.');
       } finally {
         setIsLoading(false);
       }
     };
 
     loadData();
-  }, []);
+  }, [currentWeek]);
 
   const handlePointClick = (point: string, event: React.MouseEvent) => {
     const svgRect = svgRef.current?.getBoundingClientRect();
@@ -204,11 +251,56 @@ export function WeeklyTracking() {
     try {
       setIsSaving(true);
       setError(null);
-      await databaseService.setWeeklySummary(summary);
+
+      // Save measurements first
+      const measurementsData: Measurements = {
+        id: summary.measurements.id,
+        userId: summary.userId,
+        date: summary.startDate,
+        weight: summary.measurements.weight,
+        chest: summary.measurements.chest,
+        waist: summary.measurements.waist,
+        hips: summary.measurements.hips,
+        rightArm: summary.measurements.rightArm,
+        leftArm: summary.measurements.leftArm,
+        rightThigh: summary.measurements.rightThigh,
+        leftThigh: summary.measurements.leftThigh,
+        rightCalf: summary.measurements.rightCalf,
+        leftCalf: summary.measurements.leftCalf,
+        notes: summary.measurements.notes || ''
+      };
+
+      // Create or update measurements
+      const savedMeasurements = await databaseService.createMeasurements(measurementsData);
+      
+      if (!savedMeasurements) {
+        throw new Error('Failed to save measurements');
+      }
+
+      // Create weekly summary with the saved measurements
+      const weeklySummaryData: Omit<WeeklySummary, 'id'> = {
+        weekNumber: summary.weekNumber,
+        userId: summary.userId,
+        startDate: summary.startDate,
+        endDate: summary.endDate,
+        measurements: savedMeasurements,
+        habitCompliance: summary.habitCompliance,
+        review: summary.review,
+        nextWeekGoals: summary.nextWeekGoals,
+        notes: summary.notes
+      };
+
+      // Save weekly summary
+      const savedSummary = await databaseService.createWeeklySummary(weeklySummaryData);
+      
+      if (!savedSummary) {
+        throw new Error('Failed to save weekly summary');
+      }
+
       setMessage('Changes saved successfully!');
       setTimeout(() => setMessage(null), 3000);
     } catch (err) {
-      console.error('Error saving weekly summary:', err);
+      console.error('Error saving data:', err);
       setError('Failed to save changes. Please try again.');
     } finally {
       setIsSaving(false);

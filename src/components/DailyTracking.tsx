@@ -34,7 +34,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { Layout } from '@/components/Layout';
 import { Textarea } from '@/components/ui/textarea';
 import { DAILY_TRACKING_TOOLTIPS, SECTION_TOOLTIPS } from '@/constants/tooltips';
 import { format } from 'date-fns';
@@ -471,251 +470,249 @@ export function DailyTracking() {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-6 sm:py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6 sm:mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Daily Tracking</h1>
-            <p className="text-muted-foreground mt-2">
-              {new Date(today).toLocaleDateString(undefined, { 
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </p>
-          </div>
-          <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
-            {isLoading && (
-              <div className="flex items-center justify-center gap-2 bg-muted px-4 py-2 rounded-md">
-                <Loader2Icon className="animate-spin h-4 w-4" />
-                <span className="text-sm">Saving...</span>
-              </div>
-            )}
-            {saveMessage && (
-              <Alert variant={saveMessage.includes('success') ? 'default' : 'destructive'} className="py-2 px-4">
-                <AlertDescription className="text-sm">{saveMessage}</AlertDescription>
-              </Alert>
-            )}
-            <div className="flex gap-2 sm:gap-4">
-              <Button 
-                onClick={handleSave} 
-                disabled={isLoading}
-                className="flex-1 sm:flex-none sm:w-[100px]"
-              >
-                Save
-              </Button>
-              <Button 
-                variant="destructive" 
-                onClick={handleDelete}
-                disabled={isLoading}
-                className="flex-1 sm:flex-none"
-              >
-                Delete
-              </Button>
-            </div>
-          </div>
+    <div className="container mx-auto px-4 py-6 sm:py-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6 sm:mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Daily Tracking</h1>
+          <p className="text-muted-foreground mt-2">
+            {new Date(today).toLocaleDateString(undefined, { 
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </p>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-          {/* Left Column */}
-          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  Daily Stats {renderSectionTooltip('dailyStats')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center space-x-4">
-                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <ClockIcon className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <Label>Sleep Hours</Label>
-                    <Input
-                      type="number"
-                      value={tracking.dailies.sleepHours}
-                      onChange={(e) => handleDailiesChange('sleepHours', Number(e.target.value))}
-                      min={0}
-                      max={24}
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="h-10 w-10 rounded-full bg-cyan-100 flex items-center justify-center">
-                    <DropletsIcon className="h-6 w-6 text-cyan-600" />
-                  </div>
-                  <div className="flex-1">
-                    <Label>Water (oz)</Label>
-                    <Input
-                      type="number"
-                      value={tracking.dailies.waterOz}
-                      onChange={(e) => handleDailiesChange('waterOz', Number(e.target.value))}
-                      min={0}
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <FootprintsIcon className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <Label>Steps</Label>
-                    <Input
-                      type="number"
-                      value={tracking.dailies.steps}
-                      onChange={(e) => handleDailiesChange('steps', Number(e.target.value))}
-                      min={0}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  Habits {renderSectionTooltip('habits')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {Object.entries(tracking.habits).map(([habit, isChecked]) => (
-                    <Button
-                      key={habit}
-                      variant="ghost"
-                      className={cn(
-                        "flex items-start gap-3 h-auto py-3 px-4 transition-colors break-words",
-                        isChecked ? habitColors[habit as keyof typeof habitColors] : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      )}
-                      onClick={() => handleHabitChange(habit as keyof typeof tracking.habits)}
-                    >
-                      <div className="flex-shrink-0 mt-0.5">
-                        {habitIcons[habit as keyof typeof habitIcons]}
-                      </div>
-                      <span className="text-sm font-medium leading-tight">
-                        {habit.replace(/([A-Z])/g, ' $1').trim()}
-                      </span>
-                      <div className="ml-auto flex-shrink-0">
-                        <div className={cn(
-                          "h-5 w-5 rounded-full border-2 flex items-center justify-center",
-                          isChecked ? "border-current bg-white" : "border-gray-400"
-                        )}>
-                          {isChecked && <CheckIcon className="h-3 w-3" />}
-                        </div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  Daily Summary {renderSectionTooltip('summary')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label>Daily Win</Label>
-                  <Textarea
-                    value={tracking.dailyWin}
-                    onChange={(e) => setTracking((prev) => ({ ...prev, dailyWin: e.target.value }))}
-                    placeholder="What was your biggest success today?"
-                  />
-                </div>
-                <div>
-                  <Label>Notes</Label>
-                  <Textarea
-                    value={tracking.notes}
-                    onChange={(e) => setTracking((prev) => ({ ...prev, notes: e.target.value }))}
-                    placeholder="Any other thoughts or observations about your day?"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  Meals {renderSectionTooltip('meals')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {MEAL_TYPES.map(renderMealSection)}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  Treats {renderSectionTooltip('treats')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label>Count</Label>
-                  <Input
-                    type="number"
-                    value={tracking.treats.count}
-                    onChange={(e) => handleTreatChange('count', Number(e.target.value))}
-                    min={0}
-                  />
-                </div>
-                <div>
-                  <Label>Categories</Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                    {TREAT_CATEGORIES.map((category) => (
-                      <Toggle
-                        key={category.id}
-                        pressed={tracking.treats.categories.includes(category.label)}
-                        onPressedChange={(pressed) => {
-                          setTracking((prev) => ({
-                            ...prev,
-                            treats: {
-                              ...prev.treats,
-                              categories: pressed
-                                ? [...prev.treats.categories, category.label]
-                                : prev.treats.categories.filter((c) => c !== category.label),
-                            },
-                          }));
-                        }}
-                        className={cn(
-                          "flex items-center gap-2 justify-start h-auto py-3 px-4 hover:bg-accent",
-                          "border-2 rounded-lg",
-                          tracking.treats.categories.includes(category.label)
-                            ? "border-primary bg-primary/5 text-primary hover:bg-primary/10"
-                            : "border-muted"
-                        )}
-                      >
-                        <span className="text-xl" role="img" aria-label={category.label}>
-                          {category.emoji}
-                        </span>
-                        <span className="text-sm font-medium">{category.label}</span>
-                      </Toggle>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <Label>Notes</Label>
-                  <Textarea
-                    value={tracking.treats.notes}
-                    onChange={(e) => handleTreatChange('notes', e.target.value)}
-                    placeholder="Add any notes about your treats..."
-                  />
-                </div>
-              </CardContent>
-            </Card>
+        <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+          {isLoading && (
+            <div className="flex items-center justify-center gap-2 bg-muted px-4 py-2 rounded-md">
+              <Loader2Icon className="animate-spin h-4 w-4" />
+              <span className="text-sm">Saving...</span>
+            </div>
+          )}
+          {saveMessage && (
+            <Alert variant={saveMessage.includes('success') ? 'default' : 'destructive'} className="py-2 px-4">
+              <AlertDescription className="text-sm">{saveMessage}</AlertDescription>
+            </Alert>
+          )}
+          <div className="flex gap-2 sm:gap-4">
+            <Button 
+              onClick={handleSave} 
+              disabled={isLoading}
+              className="flex-1 sm:flex-none sm:w-[100px]"
+            >
+              Save
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDelete}
+              disabled={isLoading}
+              className="flex-1 sm:flex-none"
+            >
+              Delete
+            </Button>
           </div>
         </div>
       </div>
-    </Layout>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+        {/* Left Column */}
+        <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                Daily Stats {renderSectionTooltip('dailyStats')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                  <ClockIcon className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <Label>Sleep Hours</Label>
+                  <Input
+                    type="number"
+                    value={tracking.dailies.sleepHours}
+                    onChange={(e) => handleDailiesChange('sleepHours', Number(e.target.value))}
+                    min={0}
+                    max={24}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="h-10 w-10 rounded-full bg-cyan-100 flex items-center justify-center">
+                  <DropletsIcon className="h-6 w-6 text-cyan-600" />
+                </div>
+                <div className="flex-1">
+                  <Label>Water (oz)</Label>
+                  <Input
+                    type="number"
+                    value={tracking.dailies.waterOz}
+                    onChange={(e) => handleDailiesChange('waterOz', Number(e.target.value))}
+                    min={0}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                  <FootprintsIcon className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <Label>Steps</Label>
+                  <Input
+                    type="number"
+                    value={tracking.dailies.steps}
+                    onChange={(e) => handleDailiesChange('steps', Number(e.target.value))}
+                    min={0}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                Habits {renderSectionTooltip('habits')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {Object.entries(tracking.habits).map(([habit, isChecked]) => (
+                  <Button
+                    key={habit}
+                    variant="ghost"
+                    className={cn(
+                      "flex items-start gap-3 h-auto py-3 px-4 transition-colors break-words",
+                      isChecked ? habitColors[habit as keyof typeof habitColors] : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    )}
+                    onClick={() => handleHabitChange(habit as keyof typeof tracking.habits)}
+                  >
+                    <div className="flex-shrink-0 mt-0.5">
+                      {habitIcons[habit as keyof typeof habitIcons]}
+                    </div>
+                    <span className="text-sm font-medium leading-tight">
+                      {habit.replace(/([A-Z])/g, ' $1').trim()}
+                    </span>
+                    <div className="ml-auto flex-shrink-0">
+                      <div className={cn(
+                        "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                        isChecked ? "border-current bg-white" : "border-gray-400"
+                      )}>
+                        {isChecked && <CheckIcon className="h-3 w-3" />}
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                Daily Summary {renderSectionTooltip('summary')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Daily Win</Label>
+                <Textarea
+                  value={tracking.dailyWin}
+                  onChange={(e) => setTracking((prev) => ({ ...prev, dailyWin: e.target.value }))}
+                  placeholder="What was your biggest success today?"
+                />
+              </div>
+              <div>
+                <Label>Notes</Label>
+                <Textarea
+                  value={tracking.notes}
+                  onChange={(e) => setTracking((prev) => ({ ...prev, notes: e.target.value }))}
+                  placeholder="Any other thoughts or observations about your day?"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                Meals {renderSectionTooltip('meals')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {MEAL_TYPES.map(renderMealSection)}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                Treats {renderSectionTooltip('treats')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <Label>Count</Label>
+                <Input
+                  type="number"
+                  value={tracking.treats.count}
+                  onChange={(e) => handleTreatChange('count', Number(e.target.value))}
+                  min={0}
+                />
+              </div>
+              <div>
+                <Label>Categories</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                  {TREAT_CATEGORIES.map((category) => (
+                    <Toggle
+                      key={category.id}
+                      pressed={tracking.treats.categories.includes(category.label)}
+                      onPressedChange={(pressed) => {
+                        setTracking((prev) => ({
+                          ...prev,
+                          treats: {
+                            ...prev.treats,
+                            categories: pressed
+                              ? [...prev.treats.categories, category.label]
+                              : prev.treats.categories.filter((c) => c !== category.label),
+                          },
+                        }));
+                      }}
+                      className={cn(
+                        "flex items-center gap-2 justify-start h-auto py-3 px-4 hover:bg-accent",
+                        "border-2 rounded-lg",
+                        tracking.treats.categories.includes(category.label)
+                          ? "border-primary bg-primary/5 text-primary hover:bg-primary/10"
+                          : "border-muted"
+                      )}
+                    >
+                      <span className="text-xl" role="img" aria-label={category.label}>
+                        {category.emoji}
+                      </span>
+                      <span className="text-sm font-medium">{category.label}</span>
+                    </Toggle>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>Notes</Label>
+                <Textarea
+                  value={tracking.treats.notes}
+                  onChange={(e) => handleTreatChange('notes', e.target.value)}
+                  placeholder="Add any notes about your treats..."
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 } 

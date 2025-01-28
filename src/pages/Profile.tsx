@@ -5,14 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Settings, Bell, Shield, LogOut, Loader2 } from 'lucide-react';
+import { Settings, Bell, Shield, LogOut, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { databaseService } from '@/services/DatabaseService';
 import type { UserProfile as UserProfileType } from '@/types';
 import { downloadCSV } from '@/utils/exportUtils';
 import { Switch } from '@/components/ui/switch';
 import { useTooltipPreference } from '@/hooks/useTooltipPreference';
+import { useAuthContext } from '@/components/providers/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 interface ProfileFormData extends UserProfileType {
   goals: {
@@ -23,6 +24,8 @@ interface ProfileFormData extends UserProfileType {
 }
 
 export function Profile() {
+  const { user, logout } = useAuthContext();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [profile, setProfile] = useState<ProfileFormData | null>(null);
@@ -30,6 +33,11 @@ export function Profile() {
   const { showTooltips, toggleTooltips } = useTooltipPreference();
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     const loadProfile = async () => {
       try {
         setIsLoading(true);
@@ -38,7 +46,7 @@ export function Profile() {
         
         setProfile({
           id: savedProfile?.id || crypto.randomUUID(),
-          name: savedProfile?.name || '',
+          name: user.name || '',
           birthdate: savedProfile?.birthdate || '',
           age: savedProfile?.age || 0,
           height: savedProfile?.height || '',
@@ -62,7 +70,7 @@ export function Profile() {
     };
 
     loadProfile();
-  }, []);
+  }, [user, navigate]);
 
   const handleChange = (field: keyof ProfileFormData, value: string | number) => {
     if (!profile) return;
@@ -121,6 +129,11 @@ export function Profile() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   if (isLoading && !profile) {
     return (
       <Layout>
@@ -157,9 +170,15 @@ export function Profile() {
     <Layout>
       <div className="container max-w-4xl mx-auto px-4 py-8">
         <div className="space-y-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
-            <p className="text-muted-foreground mt-2">Manage your account preferences and goals</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
+              <p className="text-muted-foreground mt-2">Manage your account preferences and goals</p>
+            </div>
+            <Button variant="outline" onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
           </div>
 
           {message && (
@@ -176,19 +195,11 @@ export function Profile() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-20 w-20">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile.name}`} />
-                      <AvatarFallback>
-                        <User className="h-10 w-10" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="text-lg font-medium">{profile.name || 'Your Name'}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Member since {new Date(profile.startDate).toLocaleDateString()}
-                      </p>
-                    </div>
+                  <div>
+                    <h3 className="text-lg font-medium">{profile?.name || 'Your Name'}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Member since {profile?.startDate ? new Date(profile.startDate).toLocaleDateString() : 'N/A'}
+                    </p>
                   </div>
 
                   <Separator />
@@ -297,6 +308,41 @@ export function Profile() {
                     checked={showTooltips}
                     onCheckedChange={toggleTooltips}
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Settings</CardTitle>
+                <CardDescription>Manage your account settings and preferences.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label>Show Tooltips</Label>
+                      <div className="text-sm text-muted-foreground">Enable or disable helpful tooltips throughout the app.</div>
+                    </div>
+                    <Switch checked={showTooltips} onCheckedChange={toggleTooltips} />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-destructive">Logout</Label>
+                      <div className="text-sm text-muted-foreground">Sign out of your account.</div>
+                    </div>
+                    <Button 
+                      variant="destructive" 
+                      onClick={() => {
+                        logout();
+                        navigate('/login');
+                      }}
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

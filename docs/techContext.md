@@ -7,22 +7,23 @@
 - React Router for navigation
 - shadcn/ui for components
 
-2. UI Libraries
+2. Backend Service
+- PocketBase for data storage and authentication
+- REST API endpoints
+- Real-time subscriptions (available)
+- File storage capabilities
+
+3. UI Libraries
 - Tailwind CSS for styling
 - Lucide React for icons
 - Radix UI for primitives
 - Class Variance Authority
 
-3. State Management
+4. State Management
 - React Context
+- PocketBase SDK
 - Local component state
-- Local storage for persistence
-
-4. Form Handling
-- Controlled components
-- Form validation
-- Error handling
-- Loading states
+- Local storage for offline capability
 
 ## Development Setup
 1. Environment
@@ -30,6 +31,7 @@
 - npm/yarn/pnpm
 - TypeScript
 - VS Code (recommended)
+- PocketBase server
 
 2. Build Tools
 - Vite
@@ -42,13 +44,17 @@
 - Prettier for formatting
 - Chrome DevTools
 - React DevTools
+- PocketBase Admin UI
 
 ## Project Structure
 1. Source Code
 ```
 src/
   components/     # Reusable components
-    ui/           # Base UI components
+  database/       # PocketBase integration
+    migration/    # Migration scripts
+    models/       # Data models
+    repositories/ # Data access layer
   pages/          # Page components
   services/       # Business logic
   types/          # TypeScript types
@@ -73,6 +79,7 @@ docs/
 - react-dom
 - react-router-dom
 - typescript
+- pocketbase
 - tailwindcss
 - @radix-ui/*
 - lucide-react
@@ -91,11 +98,11 @@ docs/
 - autoprefixer
 
 ## Technical Constraints
-1. Browser Support
-- Modern browsers
-- Mobile browsers
-- Progressive enhancement
-- Responsive design
+1. Backend Requirements
+- PocketBase server running on port 8090
+- Admin access for initial setup
+- Proper collection schema
+- Data migration capability
 
 2. Performance
 - Fast initial load
@@ -110,6 +117,7 @@ docs/
 - Color contrast
 
 4. Security
+- PocketBase authentication
 - Data validation
 - Input sanitization
 - Safe storage
@@ -121,6 +129,7 @@ docs/
 - ESLint rules
 - Prettier formatting
 - Component patterns
+- Repository pattern for data access
 
 2. Version Control
 - Git
@@ -139,6 +148,7 @@ docs/
 - Asset optimization
 - Error tracking
 - Performance monitoring
+- PocketBase deployment
 
 ## Future Considerations
 1. Planned Features
@@ -146,15 +156,18 @@ docs/
 - Data sync
 - Offline support
 - Push notifications
+- Real-time updates
 
 2. Technical Debt
 - Test coverage
 - Type definitions
 - Error boundaries
 - Performance optimization
+- Migration rollback
 
 3. Improvements
 - Code splitting
 - Lazy loading
 - Service workers
-- PWA support 
+- PWA support
+- Enhanced error handling 

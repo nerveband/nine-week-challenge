@@ -10,13 +10,13 @@ import {
 export function Navigation() {
   const routes = [
     { 
-      href: "/", 
+      href: "/daily", 
       label: "Daily",
       icon: CalendarDays 
     },
     { 
       href: "/weekly", 
-      label: "Weekly",
+      label: "Weekly Review",
       icon: Clock
     },
     { 

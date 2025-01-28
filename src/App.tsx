@@ -1,139 +1,50 @@
-import { BrowserRouter } from 'react-router-dom';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { UserProfile } from '@/components/UserProfile';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { AuthProvider, useAuthContext } from '@/components/providers/AuthProvider';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
+import { Login } from '@/pages/Login';
+import { Register } from '@/pages/Register';
+import { Profile } from '@/pages/Profile';
 import { DailyTracking } from '@/components/DailyTracking';
-import { WeeklyTracking } from '@/pages/WeeklyTracking';
-import { History } from '@/components/History';
-import { Profile } from '@/components/Profile';
-import { Analytics } from '@/components/Analytics';
-import { databaseService } from '@/services/DatabaseService';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { ErrorPage } from '@/components/ErrorPage';
-import type { UserProfile as UserProfileType } from '@/types';
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { WeeklyReview } from '@/components/WeeklyReview';
+import { Analytics } from '@/pages/Analytics';
+import { History } from '@/pages/History';
+import { Layout } from '@/components/Layout';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuthContext();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+}
+
+function AuthRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuthContext();
+  return !isAuthenticated ? <>{children}</> : <Navigate to="/daily" />;
+}
 
 export function App() {
-  const [userProfile, setUserProfile] = useState<UserProfileType | null | undefined>(undefined);
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const initApp = async () => {
-      try {
-        // Initialize database and migrate data if needed
-        const initResult = await databaseService.initializeDatabase();
-        if (!initResult.success) {
-          setError('Failed to initialize database. Some features may not work correctly.');
-        }
-
-        // Get user profile
-        const profile = await databaseService.getUserProfile();
-        setUserProfile(profile || null);
-      } catch (err) {
-        console.error('Error initializing app:', err);
-        setError('Failed to load user data. Please try refreshing the page.');
-      } finally {
-        setIsInitializing(false);
-      }
-    };
-
-    initApp();
-  }, []);
-
-  if (isInitializing) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2">Loading...</h2>
-          <p className="text-muted-foreground">Setting up your personal space</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <ErrorPage 
-        title="Initialization Error"
-        message={error}
-      />
-    );
-  }
-
   return (
-    <TooltipProvider delayDuration={200} disableHoverableContent>
-      <ErrorBoundary>
-        <BrowserRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true
-          }}
-        >
-          <Routes>
-            <Route
-              path="/"
-              element={
-                userProfile ? (
-                  <Navigate to="/daily" replace />
-                ) : (
-                  <UserProfile />
-                )
-              }
-            />
-            <Route
-              path="/daily"
-              element={
-                userProfile ? (
-                  <DailyTracking />
-                ) : (
-                  <Navigate to="/" replace />
-                )
-              }
-            />
-            <Route
-              path="/weekly"
-              element={
-                userProfile ? (
-                  <WeeklyTracking />
-                ) : (
-                  <Navigate to="/" replace />
-                )
-              }
-            />
-            <Route
-              path="/history"
-              element={
-                userProfile ? (
-                  <History />
-                ) : (
-                  <Navigate to="/" replace />
-                )
-              }
-            />
-            <Route
-              path="/analytics"
-              element={
-                userProfile ? (
-                  <Analytics />
-                ) : (
-                  <Navigate to="/" replace />
-                )
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                userProfile ? (
-                  <Profile />
-                ) : (
-                  <Navigate to="/" replace />
-                )
-              }
-            />
-          </Routes>
-        </BrowserRouter>
-      </ErrorBoundary>
-    </TooltipProvider>
+    <Router future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true
+    }}>
+      <ThemeProvider defaultTheme="system" storageKey="app-theme">
+        <TooltipProvider>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<AuthRoute><Login /></AuthRoute>} />
+              <Route path="/register" element={<AuthRoute><Register /></AuthRoute>} />
+              <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                <Route index element={<Navigate to="daily" replace />} />
+                <Route path="daily" element={<DailyTracking />} />
+                <Route path="weekly" element={<WeeklyReview />} />
+                <Route path="analytics" element={<Analytics />} />
+                <Route path="history" element={<History />} />
+                <Route path="profile" element={<Profile />} />
+              </Route>
+            </Routes>
+          </AuthProvider>
+        </TooltipProvider>
+      </ThemeProvider>
+    </Router>
   );
-} 
+}

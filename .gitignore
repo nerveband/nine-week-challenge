@@ -36,4 +36,10 @@ yarn-error.log*
 *.tsbuildinfo
 
 # New line
-.specstory 
+.specstory
+
+# PocketBase
+pocketbase/
+pb_data/
+pb_migrations/
+.env 

@@ -15,6 +15,7 @@ export function UserProfile() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isStorageAvailable, setIsStorageAvailable] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [profile, setProfile] = useState<UserProfileType>({
     id: crypto.randomUUID(),
     name: '',
@@ -29,13 +30,21 @@ export function UserProfile() {
   });
 
   useEffect(() => {
-    const checkStorage = async () => {
+    const initializeApp = async () => {
       try {
+        // Initialize database
+        const initResult = await databaseService.initializeDatabase();
+        if (!initResult.success) {
+          throw new Error('Failed to initialize database');
+        }
+
+        // Test storage availability
         await databaseService.testStorage();
         setIsStorageAvailable(true);
+        setIsInitialized(true);
         setError('');
       } catch (err) {
-        console.error('Storage not available:', err);
+        console.error('Initialization error:', err);
         setIsStorageAvailable(false);
         setError(
           'Your browser is in private/incognito mode or storage is not available. ' +
@@ -44,7 +53,7 @@ export function UserProfile() {
       }
     };
 
-    checkStorage();
+    initializeApp();
   }, []);
 
   const calculateAge = (birthdate: string) => {
@@ -63,8 +72,8 @@ export function UserProfile() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isStorageAvailable) {
-      setError('Cannot save profile in private/incognito mode. Please use regular browsing mode.');
+    if (!isStorageAvailable || !isInitialized) {
+      setError('Cannot save profile. Please ensure you are not in private/incognito mode.');
       return;
     }
 
@@ -88,7 +97,72 @@ export function UserProfile() {
     try {
       setIsLoading(true);
       setError('');
-      await databaseService.setUserProfile(profile);
+      
+      // Save the profile and wait for it to complete
+      const profileId = await databaseService.setUserProfile(profile);
+      if (!profileId) {
+        throw new Error('Failed to save profile');
+      }
+
+      // Initialize an empty daily tracking for today
+      const today = new Date().toISOString().split('T')[0];
+      await databaseService.setDailyTracking({
+        id: crypto.randomUUID(),
+        userId: profileId,
+        date: today,
+        dailies: {
+          sleepHours: 0,
+          waterOz: 0,
+          steps: 0
+        },
+        meals: {
+          breakfast: {
+            time: '',
+            hungerLevel: 0,
+            fullnessLevel: 0,
+            mindfulnessScore: 0,
+            hungerDuration: 0,
+            slowEatingScore: 0,
+            notes: ''
+          },
+          lunch: {
+            time: '',
+            hungerLevel: 0,
+            fullnessLevel: 0,
+            mindfulnessScore: 0,
+            hungerDuration: 0,
+            slowEatingScore: 0,
+            notes: ''
+          },
+          dinner: {
+            time: '',
+            hungerLevel: 0,
+            fullnessLevel: 0,
+            mindfulnessScore: 0,
+            hungerDuration: 0,
+            slowEatingScore: 0,
+            notes: ''
+          },
+          snacks: []
+        },
+        habits: {
+          mealsWithinSchedule: false,
+          noSnacking: false,
+          mindfulEating: false,
+          hungerAwareness: false,
+          slowEating: false,
+          treatAwareness: false
+        },
+        treats: {
+          count: 0,
+          categories: [],
+          notes: ''
+        },
+        dailyWin: '',
+        notes: ''
+      });
+
+      // Only navigate after all database operations are complete
       navigate('/daily');
     } catch (err) {
       console.error('Error saving profile:', err);
@@ -193,7 +267,7 @@ export function UserProfile() {
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={isLoading || !isStorageAvailable}
+                disabled={isLoading || !isStorageAvailable || !isInitialized}
               >
                 {isLoading ? (
                   <>

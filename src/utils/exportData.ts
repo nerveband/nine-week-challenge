@@ -136,208 +136,182 @@ export async function importAllData(jsonString: string): Promise<void> {
   }
 }
 
-// Helper to create CSV content
-function createCSVContent(content: string[][]): string {
-  return content.map(row => 
-    row.map(cell => {
-      // If cell contains commas, quotes, or newlines, wrap in quotes and escape existing quotes
-      if (cell && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
-        return `"${cell.replace(/"/g, '""')}"`;
-      }
-      return cell;
-    }).join(',')
-  ).join('\n');
+function createCSVContent(rows: (string | number | null | undefined)[][]): string {
+  return rows
+    .map(row =>
+      row.map(cell => {
+        const str = cell?.toString() || '';
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      }).join(',')
+    )
+    .join('\n');
 }
 
-export async function exportToCSV(type: 'daily' | 'weekly' | 'measurements'): Promise<void> {
-  let headers: string[] = [];
-  let rows: string[][] = [];
-
-  switch (type) {
-    case 'daily': {
-      headers = [
-        'Date',
-        'Sleep Hours',
-        'Water (oz)',
-        'Steps',
-        'Breakfast Time',
-        'Breakfast Hunger',
-        'Breakfast Fullness',
-        'Breakfast Notes',
-        'Lunch Time',
-        'Lunch Hunger',
-        'Lunch Fullness',
-        'Lunch Notes',
-        'Dinner Time',
-        'Dinner Hunger',
-        'Dinner Fullness',
-        'Dinner Notes',
-        'Snacks',
-        'Habits',
-        'Treats',
-        'Daily Win',
-        'Notes'
-      ];
-
-      const dailyData = await databaseService.getDailyTrackingHistory();
-      if (dailyData && Array.isArray(dailyData)) {
-        rows = dailyData
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-          .map(daily => {
-            const habits = Object.entries(daily.habits)
-              .map(([habit, done]) => `${habit}: ${done ? 'Yes' : 'No'}`)
-              .join('; ');
-
-            const snacks = Array.isArray(daily.meals.snacks) 
-              ? daily.meals.snacks
-                .map((snack: MealEntry) => `${snack.time} (Hunger: ${snack.hungerLevel}, Fullness: ${snack.fullnessLevel})`)
-                .join('; ')
-              : '';
-
-            return [
-              formatDate(daily.date),
-              daily.dailies.sleepHours.toString(),
-              daily.dailies.waterOz.toString(),
-              daily.dailies.steps.toString(),
-              daily.meals.breakfast.time,
-              daily.meals.breakfast.hungerLevel.toString(),
-              daily.meals.breakfast.fullnessLevel.toString(),
-              daily.meals.breakfast.notes,
-              daily.meals.lunch.time,
-              daily.meals.lunch.hungerLevel.toString(),
-              daily.meals.lunch.fullnessLevel.toString(),
-              daily.meals.lunch.notes,
-              daily.meals.dinner.time,
-              daily.meals.dinner.hungerLevel.toString(),
-              daily.meals.dinner.fullnessLevel.toString(),
-              daily.meals.dinner.notes,
-              snacks,
-              habits,
-              `Count: ${daily.treats.count}, Categories: ${daily.treats.categories.join(', ')}, Notes: ${daily.treats.notes}`,
-              daily.dailyWin,
-              daily.notes
-            ];
-          });
-      }
-      break;
-    }
-    case 'weekly': {
-      const headers = [
-        'Week',
-        'Start Date',
-        'End Date',
-        'Weight',
-        'Chest',
-        'Waist',
-        'Hips',
-        'Right Arm',
-        'Left Arm',
-        'Right Thigh',
-        'Left Thigh',
-        'Right Calf',
-        'Left Calf',
-        'Measurement Notes',
-        'What Went Well',
-        'Areas for Improvement',
-        'Review Notes',
-        'Primary Goal',
-        'Action Steps',
-        'Anticipated Challenges',
-        'Habit Compliance',
-        'Notes'
-      ];
-
-      const weeklyData = await databaseService.getAllWeeklySummaries();
-      if (weeklyData) {
-        const rows = Object.entries(weeklyData)
-          .sort(([weekA], [weekB]) => parseInt(weekB) - parseInt(weekA))
-          .map(([_, summary]) => {
-            const { measurements, review, nextWeekGoals, habitCompliance } = summary;
-            const habitComplianceStr = Object.entries(habitCompliance || {})
-              .map(([habit, percentage]) => `${habit}: ${percentage}%`)
-              .join('; ');
-
-            return [
-              summary.weekNumber.toString(),
-              formatDate(summary.startDate),
-              formatDate(summary.endDate),
-              measurements?.weight?.toString() || '',
-              measurements?.chest?.toString() || '',
-              measurements?.waist?.toString() || '',
-              measurements?.hips?.toString() || '',
-              measurements?.rightArm?.toString() || '',
-              measurements?.leftArm?.toString() || '',
-              measurements?.rightThigh?.toString() || '',
-              measurements?.leftThigh?.toString() || '',
-              measurements?.rightCalf?.toString() || '',
-              measurements?.leftCalf?.toString() || '',
-              measurements?.notes || '',
-              review?.wentWell || '',
-              review?.improvements || '',
-              review?.notes || '',
-              nextWeekGoals?.primary || '',
-              nextWeekGoals?.actionSteps || '',
-              nextWeekGoals?.challenges || '',
-              habitComplianceStr,
-              summary.notes || ''
-            ];
-          });
-
-        const csvContent = createCSVContent([headers, ...rows]);
-        downloadCSV(csvContent, `weekly-tracking.csv`);
-      }
-      break;
-    }
-    case 'measurements': {
-      headers = [
-        'Date',
-        'Weight',
-        'Chest',
-        'Waist',
-        'Hips',
-        'Right Arm',
-        'Left Arm',
-        'Right Thigh',
-        'Left Thigh',
-        'Right Calf',
-        'Left Calf',
-        'Notes'
-      ];
-
-      const measurementsData = await databaseService.getMeasurements();
-      if (measurementsData && Array.isArray(measurementsData)) {
-        rows = measurementsData
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-          .map(measurement => [
-            formatDate(measurement.date),
-            measurement.weight.toString(),
-            measurement.chest.toString(),
-            measurement.waist.toString(),
-            measurement.hips.toString(),
-            measurement.rightArm.toString(),
-            measurement.leftArm.toString(),
-            measurement.rightThigh.toString(),
-            measurement.leftThigh.toString(),
-            measurement.rightCalf.toString(),
-            measurement.leftCalf.toString(),
-            measurement.notes || ''
-          ]);
-      }
-      break;
-    }
-  }
-
-  const content: string[][] = [headers].concat(rows);
-  const csvContent = createCSVContent(content);
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+function downloadCSV(content: string, filename: string) {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
-  
   link.setAttribute('href', url);
-  link.setAttribute('download', `${type}_tracking.csv`);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+export async function exportToCSV(type: 'daily' | 'weekly' | 'measurements'): Promise<void> {
+  try {
+    switch (type) {
+      case 'daily': {
+        const dailyTracking = await databaseService.getDailyTrackingHistory();
+        const userProfile = await databaseService.getUserProfile();
+        
+        if (!dailyTracking || !userProfile) {
+          throw new Error('No data to export');
+        }
+
+        const headers = [
+          'Date',
+          'Sleep Hours',
+          'Water (oz)',
+          'Steps',
+          'Breakfast Time',
+          'Breakfast Hunger',
+          'Breakfast Fullness',
+          'Lunch Time',
+          'Lunch Hunger',
+          'Lunch Fullness',
+          'Dinner Time',
+          'Dinner Hunger',
+          'Dinner Fullness',
+          'Snacks',
+          'Habits',
+          'Treats',
+          'Daily Win',
+          'Notes'
+        ] as const;
+
+        const rows = Object.entries(dailyTracking).map(([date, tracking]) => [
+          date,
+          tracking.dailies.sleepHours,
+          tracking.dailies.waterOz,
+          tracking.dailies.steps,
+          tracking.meals.breakfast.time,
+          tracking.meals.breakfast.hungerLevel,
+          tracking.meals.breakfast.fullnessLevel,
+          tracking.meals.lunch.time,
+          tracking.meals.lunch.hungerLevel,
+          tracking.meals.lunch.fullnessLevel,
+          tracking.meals.dinner.time,
+          tracking.meals.dinner.hungerLevel,
+          tracking.meals.dinner.fullnessLevel,
+          tracking.meals.snacks.map(s => `${s.time}: ${s.reason}`).join('; '),
+          Object.entries(tracking.habits)
+            .map(([habit, done]) => `${habit}: ${done ? 'Yes' : 'No'}`)
+            .join('; '),
+          `Count: ${tracking.treats.count}, Categories: ${tracking.treats.categories.join(', ')}`,
+          tracking.dailyWin,
+          tracking.notes
+        ]);
+
+        const csvContent = createCSVContent([headers as unknown as (string | number)[], ...rows]);
+        downloadCSV(csvContent, 'daily-tracking.csv');
+        break;
+      }
+
+      case 'weekly': {
+        const weeklySummaries = await databaseService.getAllWeeklySummaries();
+        
+        if (!weeklySummaries) {
+          throw new Error('No data to export');
+        }
+
+        const headers = [
+          'Week',
+          'Start Date',
+          'End Date',
+          'What Went Well',
+          'Areas for Improvement',
+          'Review Notes',
+          'Primary Goal',
+          'Action Steps',
+          'Anticipated Challenges',
+          'Habit Compliance',
+          'Notes'
+        ] as const;
+
+        const rows = Object.entries(weeklySummaries).map(([_, summary]) => [
+          summary.weekNumber,
+          summary.startDate,
+          summary.endDate,
+          summary.review.wentWell,
+          summary.review.improvements,
+          summary.review.notes,
+          summary.nextWeekGoals.primary,
+          summary.nextWeekGoals.actionSteps,
+          summary.nextWeekGoals.challenges,
+          Object.entries(summary.habitCompliance)
+            .map(([habit, percentage]) => `${habit}: ${percentage}%`)
+            .join('; '),
+          summary.notes
+        ]);
+
+        const csvContent = createCSVContent([headers as unknown as (string | number)[], ...rows]);
+        downloadCSV(csvContent, 'weekly-tracking.csv');
+        break;
+      }
+
+      case 'measurements': {
+        const measurements = await databaseService.getAllMeasurements();
+        
+        if (!measurements) {
+          throw new Error('No data to export');
+        }
+
+        const headers = [
+          'Date',
+          'Weight',
+          'Chest',
+          'Chest 2',
+          'Waist',
+          'Hips',
+          'Right Arm',
+          'Left Arm',
+          'Right Thigh',
+          'Left Thigh',
+          'Right Calf',
+          'Left Calf',
+          'Notes'
+        ] as const;
+
+        const rows = Object.entries(measurements).map(([_, measurement]) => [
+          measurement.date,
+          measurement.weight,
+          measurement?.chest || '',
+          measurement?.chest2 || '',
+          measurement?.waist || '',
+          measurement?.hips || '',
+          measurement?.rightArm || '',
+          measurement?.leftArm || '',
+          measurement?.rightThigh || '',
+          measurement?.leftThigh || '',
+          measurement?.rightCalf || '',
+          measurement?.leftCalf || '',
+          measurement.notes
+        ]);
+
+        const csvContent = createCSVContent([headers as unknown as (string | number)[], ...rows]);
+        downloadCSV(csvContent, 'measurements.csv');
+        break;
+      }
+    }
+  } catch (error) {
+    console.error('Error exporting data:', error);
+    throw error;
+  }
 }
 
 // Import CSV data
@@ -367,7 +341,10 @@ export async function importFromCSV(csv: string, type: 'daily' | 'weekly' | 'mea
             nextWeekGoals: JSON.parse(obj.nextWeekGoals),
             habitCompliance: JSON.parse(obj.habitCompliance)
           };
-          return databaseService.setWeeklySummary(Number(obj.week), summary);
+          return databaseService.setWeeklySummary({
+            ...summary,
+            weekNumber: Number(obj.week)
+          });
         }));
         break;
 
@@ -521,15 +498,15 @@ export const exportTrackingToCSV = async () => {
         tracking.dailies.steps,
         // Weekly Measurements
         measurement?.weight || '',
-        measurement?.measurements?.chest || '',
-        measurement?.measurements?.waist || '',
-        measurement?.measurements?.hips || '',
-        measurement?.measurements?.rightArm || '',
-        measurement?.measurements?.leftArm || '',
-        measurement?.measurements?.rightThigh || '',
-        measurement?.measurements?.leftThigh || '',
-        measurement?.measurements?.rightCalf || '',
-        measurement?.measurements?.leftCalf || '',
+        measurement?.chest || '',
+        measurement?.waist || '',
+        measurement?.hips || '',
+        measurement?.rightArm || '',
+        measurement?.leftArm || '',
+        measurement?.rightThigh || '',
+        measurement?.leftThigh || '',
+        measurement?.rightCalf || '',
+        measurement?.leftCalf || '',
         `"${weekSummary.notes || ''}"`,
         // Weekly Habit Compliance
         Math.round((weekSummary.habitCompliance?.mealsWithinSchedule || 0) * 100),
@@ -563,7 +540,9 @@ export const exportTrackingToCSV = async () => {
     });
 
   // Combine headers and rows
-  const csvContent = createCSVContent([headers, ...rows]);
+  const typedHeaders = Array.isArray(headers) ? headers : [headers];
+  const typedRows = rows.map(row => Array.isArray(row) ? row : [row]);
+  const csvContent = createCSVContent([typedHeaders, ...typedRows]);
   
   // Create and download the file
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

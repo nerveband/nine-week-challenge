@@ -1,0 +1,46 @@
+PocketBase Migration Execution Plan v2.1 (Free App)
+
+Application Context Snapshot:
+- Current Storage: IndexedDB (Dexie.js) + localStorage
+- Core Entities: 
+  • UserProfiles (demographics + phase tracking)
+  • DailyTracking (habits/meals)
+  • WeeklySummary (progress)
+  • Measurements (body metrics)
+  • UserGoals (targets)
+- Critical Dependencies:
+  • Dexie.js (v3.2.3) -> PocketBase
+  • IndexedDB shim -> PocketBase SDK
+  • LocalForage -> PocketBase Auth Store
+
+Execution Rules:
+1. STRICT PHASE ORDERING - No phase may begin before previous phase verification
+2. CONTEXT PRESERVATION - Maintain TypeScript interfaces during migration
+3. DATA LAYER ISOLATION - All PocketBase interactions must go through service/repository pattern
+4. SECURITY FIRST - Never expose PocketBase admin credentials in client code
+5. FAIL-SAFE VERIFICATION - Each phase must include 3 validation checks.
+6. ALWAYS GIT COMMIT - Before moving to next phase
+
+Phase Sequence:
+
+1. 1-core-purge.md
+- ELIMINATE IndexedDB infrastructure
+- ESTABLISH PocketBase foundation
+- VALIDATE empty state
+
+2. 2-data-transition.md
+- REPLACE data access patterns
+- IMPLEMENT PocketBase repositories
+- VERIFY write-through consistency
+
+3. 3-auth-security.md
+- IMPLEMENT basic authentication flow
+- SET UP collection security rules
+- VERIFY user data isolation
+
+4. 4-basic-deployment.md
+- CONFIGURE development environment
+- SET UP basic error tracking
+- IMPLEMENT simple backup strategy
+
+Note: Advanced features like billing, containerization, and monitoring are planned for future releases. 
