@@ -45,8 +45,8 @@ export default function LoginPage() {
           title: 'Success',
           description: 'Welcome back!',
         })
-        // Use window.location for a full page refresh to ensure middleware runs
-        window.location.href = '/dashboard'
+        // Force a hard navigation to ensure auth state is properly refreshed
+        window.location.assign('/dashboard')
       }
     } catch (error) {
       toast({
