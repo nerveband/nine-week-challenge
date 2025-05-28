@@ -1,5 +1,6 @@
 // Service Worker for cache busting and offline support
 const CACHE_NAME = `nwc-cache-${Date.now()}`
+const DOMAIN = self.location.hostname
 const urlsToCache = [
   '/',
   '/dashboard',

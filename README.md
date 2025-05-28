@@ -20,8 +20,8 @@ Transform your habits in 9 weeks with this comprehensive wellness tracking app. 
 
 **Important**: After deployment, configure authentication:
 1. Go to your Supabase project → Authentication → URL Configuration
-2. Add your Vercel URL to "Site URL": `https://your-project-name.vercel.app`
-3. Add to "Redirect URLs": `https://your-project-name.vercel.app/**`
+2. Add your domain to "Site URL": `https://your-domain.com`
+3. Add to "Redirect URLs": `https://your-domain.com/**`
 
 ### Step 2: Deploy to Vercel (2 minutes)
 
