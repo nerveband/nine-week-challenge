@@ -49,6 +49,11 @@ export default function TrackingPage() {
   } = useForm<ExtendedDailyTrackingInput>({
     resolver: zodResolver(dailyTrackingSchema),
     defaultValues: {
+      hours_sleep: 8,
+      ounces_water: 64,
+      steps: 5000,
+      daily_win: '',
+      notes: '',
       meals: [],
       treats: [],
     }
@@ -107,9 +112,9 @@ export default function TrackingPage() {
         setExistingTreats(tracking.treats || [])
         
         reset({
-          hours_sleep: tracking.hours_sleep || undefined,
-          ounces_water: tracking.ounces_water || undefined,
-          steps: tracking.steps || undefined,
+          hours_sleep: tracking.hours_sleep || 8,
+          ounces_water: tracking.ounces_water || 64,
+          steps: tracking.steps || 5000,
           daily_win: tracking.daily_win || '',
           notes: tracking.notes || '',
         })
@@ -252,11 +257,19 @@ export default function TrackingPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Daily Tracking</h1>
-        <p className="text-muted-foreground">
-          Week {currentWeek} - {weekPhase === 'basic' ? 'Building Basic Habits' : weekPhase === 'hunger' ? 'Hunger Awareness' : 'Mindful Satisfaction'}
-        </p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Daily Tracking</h1>
+          <p className="text-muted-foreground">
+            Week {currentWeek} - {weekPhase === 'basic' ? 'Building Basic Habits' : weekPhase === 'hunger' ? 'Hunger Awareness' : 'Mindful Satisfaction'}
+          </p>
+        </div>
+        {trackingId && (
+          <div className="flex items-center gap-2 text-sm text-green-600">
+            <Trophy className="h-4 w-4" />
+            <span>Today&apos;s tracking saved</span>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -267,60 +280,96 @@ export default function TrackingPage() {
                 <CardTitle>Basic Tracking</CardTitle>
                 <CardDescription>Track your daily habits</CardDescription>
               </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-3">
-                <div className="space-y-2">
-                  <Label htmlFor="hours_sleep" className="flex items-center gap-2">
-                    <Moon className="h-4 w-4" />
-                    Hours of Sleep
-                  </Label>
-                  <Input
-                    id="hours_sleep"
-                    type="number"
-                    step="0.5"
-                    min="0"
-                    max="24"
-                    placeholder="8"
-                    {...register('hours_sleep', { valueAsNumber: true })}
-                  />
-                  {errors.hours_sleep && (
-                    <p className="text-sm text-red-600">{errors.hours_sleep.message}</p>
-                  )}
-                </div>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <Moon className="h-4 w-4" />
+                      Hours of Sleep: <span className="font-semibold">{watch('hours_sleep') || 8} hours</span>
+                    </Label>
+                    <Slider
+                      value={[watch('hours_sleep') || 8]}
+                      onValueChange={(value) => setValue('hours_sleep', value[0])}
+                      min={0}
+                      max={12}
+                      step={0.5}
+                      className="w-full"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Recommended: 7-9 hours per night
+                    </p>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="ounces_water" className="flex items-center gap-2">
-                    <Droplets className="h-4 w-4" />
-                    Ounces of Water
-                  </Label>
-                  <Input
-                    id="ounces_water"
-                    type="number"
-                    min="0"
-                    max="300"
-                    placeholder="64"
-                    {...register('ounces_water', { valueAsNumber: true })}
-                  />
-                  {errors.ounces_water && (
-                    <p className="text-sm text-red-600">{errors.ounces_water.message}</p>
-                  )}
-                </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <Droplets className="h-4 w-4" />
+                      Water Intake: <span className="font-semibold">{Math.round((watch('ounces_water') || 64) / 8)} glasses</span> ({watch('ounces_water') || 64} oz)
+                    </Label>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setValue('ounces_water', Math.max(0, (watch('ounces_water') || 64) - 8))}
+                      >
+                        -
+                      </Button>
+                      <div className="flex gap-1">
+                        {Array.from({ length: Math.min(12, Math.round((watch('ounces_water') || 64) / 8)) }).map((_, i) => (
+                          <Droplets key={i} className="h-4 w-4 text-blue-500 fill-blue-500" />
+                        ))}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setValue('ounces_water', Math.min(128, (watch('ounces_water') || 64) + 8))}
+                      >
+                        +
+                      </Button>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      1 glass = 8 oz. Recommended: 8 glasses (64 oz) per day
+                    </p>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="steps" className="flex items-center gap-2">
-                    <Footprints className="h-4 w-4" />
-                    Number of Steps
-                  </Label>
-                  <Input
-                    id="steps"
-                    type="number"
-                    min="0"
-                    max="100000"
-                    placeholder="10000"
-                    {...register('steps', { valueAsNumber: true })}
-                  />
-                  {errors.steps && (
-                    <p className="text-sm text-red-600">{errors.steps.message}</p>
-                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="steps" className="flex items-center gap-2">
+                      <Footprints className="h-4 w-4" />
+                      Daily Steps: <span className="font-semibold">{(watch('steps') || 5000).toLocaleString()}</span>
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="steps"
+                        type="number"
+                        min="0"
+                        max="50000"
+                        className="max-w-[120px]"
+                        {...register('steps', { 
+                          setValueAs: (v) => v === '' ? 0 : parseInt(v, 10),
+                        })}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setValue('steps', (watch('steps') || 5000) + 1000)}
+                      >
+                        +1k
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setValue('steps', (watch('steps') || 5000) + 5000)}
+                      >
+                        +5k
+                      </Button>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Recommended: 10,000 steps per day
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
