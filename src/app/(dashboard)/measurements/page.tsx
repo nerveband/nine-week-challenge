@@ -139,7 +139,7 @@ export default function MeasurementsPage() {
       const key2 = `${type}2` as keyof MeasurementReading
       const key3 = `${type}3` as keyof MeasurementReading
       
-      const values = [readings[key1], readings[key2], readings[key3]].filter(v => v !== undefined && v !== null && v > 0)
+      const values = [readings[key1], readings[key2], readings[key3]].filter((v): v is number => v !== undefined && v !== null && v > 0)
       
       if (values.length > 0) {
         const average = values.reduce((sum, val) => sum + val, 0) / values.length
@@ -304,11 +304,11 @@ export default function MeasurementsPage() {
                     <p className="text-sm font-medium capitalize">
                       {measurement === 'chest_2' ? 'Chest 2 (Under Breast)' : measurement}
                     </p>
-                    <p className="text-2xl font-bold">{latest || '-'}"</p>
+                    <p className="text-2xl font-bold">{latest || '-'}&quot;</p>
                     {progress && (
                       <p className={`text-sm flex items-center gap-1 ${progress.difference < 0 ? 'text-green-600' : 'text-orange-600'}`}>
                         <TrendingDown className={`h-3 w-3 ${progress.difference > 0 ? 'rotate-180' : ''}`} />
-                        {Math.abs(progress.difference)}" ({Math.abs(progress.percentage)}%)
+                        {Math.abs(progress.difference)}&quot; ({Math.abs(progress.percentage)}%)
                       </p>
                     )}
                   </div>
@@ -325,7 +325,7 @@ export default function MeasurementsPage() {
             <CardHeader>
               <CardTitle>Take Measurements</CardTitle>
               <CardDescription>
-                Take 3 measurements for each body part and we'll calculate the average for you
+                Take 3 measurements for each body part and we&apos;ll calculate the average for you
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -346,7 +346,7 @@ export default function MeasurementsPage() {
                         {measurement === 'chest_2' ? 'Chest 2 (Under Breast)' : measurement} Measurements
                       </h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Take 3 measurements and we'll calculate the average
+                        Take 3 measurements and we&apos;ll calculate the average
                       </p>
                     </div>
 

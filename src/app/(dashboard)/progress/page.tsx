@@ -187,7 +187,7 @@ export default function ProgressPage() {
       return acc
     }, {} as Record<string, { hunger: number[], fullness: number[] }>)
 
-    return Object.entries(mealData)
+    return (Object.entries(mealData) as [string, { hunger: number[], fullness: number[] }][])
       .slice(-14) // Last 2 weeks
       .map(([date, values]) => ({
         date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
