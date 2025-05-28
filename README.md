@@ -20,7 +20,7 @@ Transform your habits in 9 weeks with this comprehensive wellness tracking app. 
 
 ### Step 2: Deploy to Vercel (3 minutes)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/nine-week-challenge&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&envDescription=Required%20Supabase%20credentials&envLink=https://github.com/YOUR_USERNAME/nine-week-challenge/blob/main/.env.local.example&project-name=nine-week-challenge&repository-name=nine-week-challenge)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/nerveband/nine-week-challenge&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&envDescription=Required%20Supabase%20credentials&envLink=https://github.com/nerveband/nine-week-challenge/blob/main/.env.local.example&project-name=nine-week-challenge&repository-name=nine-week-challenge)
 
 1. Click the "Deploy with Vercel" button above
 2. Sign in with GitHub (create account if needed)
@@ -69,7 +69,7 @@ Transform your habits in 9 weeks with this comprehensive wellness tracking app. 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/nine-week-challenge.git
+git clone https://github.com/nerveband/nine-week-challenge.git
 cd nine-week-challenge
 ```
 
@@ -142,7 +142,7 @@ MIT License - feel free to use this for your own projects!
 Having issues? Check out:
 - [Supabase Documentation](https://supabase.com/docs)
 - [Next.js Documentation](https://nextjs.org/docs)
-- [Create an issue](https://github.com/YOUR_USERNAME/nine-week-challenge/issues)
+- [Create an issue](https://github.com/nerveband/nine-week-challenge/issues)
 
 ---
 
