@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu,
   Ruler,
+  User,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Daily Tracking', href: '/tracking', icon: Activity },
   { name: 'Measurements', href: '/measurements', icon: Ruler },
   { name: 'Progress', href: '/progress', icon: BarChart3 },
+  { name: 'Profile', href: '/profile', icon: User },
 ]
 
 export default function DashboardLayout({

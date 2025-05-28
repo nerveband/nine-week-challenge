@@ -2,6 +2,8 @@ import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { WEEK_PHASES } from '@/types'
 
+export const MEASUREMENT_WEEKS = [1, 3, 5, 7, 9]
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }

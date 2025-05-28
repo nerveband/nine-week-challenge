@@ -2,7 +2,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { getCurrentWeek, getCompletionPercentage, getDaysUntilNextMeasurement, isMeasurementWeek } from '@/lib/utils'
+import { getCurrentWeek, getCompletionPercentage, getDaysUntilNextMeasurement, isMeasurementWeek, getStreakDays } from '@/lib/utils'
 import { Activity, Calendar, Droplets, Footprints, Moon, Target, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 
@@ -39,13 +39,14 @@ export default async function DashboardPage() {
     .eq('date', today)
     .single()
 
-  // Get recent tracking for streak calculation
-  const { data: recentTracking } = await supabase
+  // Get all tracking data for streak calculation
+  const { data: allTracking } = await supabase
     .from('daily_tracking')
     .select('date')
     .eq('user_id', user.id)
     .order('date', { ascending: false })
-    .limit(30)
+
+  const currentStreak = getStreakDays(allTracking || [])
 
   return (
     <div className="space-y-6">
@@ -81,9 +82,9 @@ export default async function DashboardPage() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{recentTracking?.length || 0} days</div>
+            <div className="text-2xl font-bold">{currentStreak} days</div>
             <p className="text-xs text-muted-foreground">
-              Keep it up!
+              {currentStreak > 0 ? 'Keep it up!' : 'Start tracking today!'}
             </p>
           </CardContent>
         </Card>
