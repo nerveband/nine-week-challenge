@@ -7,7 +7,7 @@ import '@/styles/globals.css'
 
 export const metadata: Metadata = {
   title: 'Nine Week Challenge - Transform Your Habits in 9 Weeks',
-  description: 'Track body measurements, daily habits, meals, and progress over a 9-week wellness journey.',
+  description: 'Track body measurements, daily habits, meals, and progress over your 9-week wellness journey.',
   icons: {
     icon: '/favicon.ico',
   },
