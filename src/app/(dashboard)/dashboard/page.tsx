@@ -198,6 +198,11 @@ export default async function DashboardPage() {
           </Link>
         </CardContent>
       </Card>
+
+      {/* Version Info */}
+      <div className="text-center text-xs text-muted-foreground">
+        Last updated: {new Date().toLocaleString()}
+      </div>
     </div>
   )
 }

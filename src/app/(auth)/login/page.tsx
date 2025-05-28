@@ -29,7 +29,7 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true)
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       })
@@ -40,12 +40,13 @@ export default function LoginPage() {
           description: error.message,
           variant: 'destructive',
         })
-      } else {
+      } else if (authData.user) {
         toast({
           title: 'Success',
           description: 'Welcome back!',
         })
-        router.push('/dashboard')
+        // Use window.location for a full page refresh to ensure middleware runs
+        window.location.href = '/dashboard'
       }
     } catch (error) {
       toast({

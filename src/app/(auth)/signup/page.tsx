@@ -29,7 +29,7 @@ export default function SignupPage() {
   const onSubmit = async (data: SignupInput) => {
     setIsLoading(true)
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -45,12 +45,20 @@ export default function SignupPage() {
           description: error.message,
           variant: 'destructive',
         })
-      } else {
-        toast({
-          title: 'Success',
-          description: 'Welcome to Nine Week Challenge! Please check your email to verify your account.',
-        })
-        router.push('/login')
+      } else if (authData.user) {
+        if (authData.user.email_confirmed_at) {
+          toast({
+            title: 'Success',
+            description: 'Welcome to Nine Week Challenge!',
+          })
+          window.location.href = '/dashboard'
+        } else {
+          toast({
+            title: 'Success',
+            description: 'Welcome to Nine Week Challenge! Please check your email to verify your account.',
+          })
+          window.location.href = '/login'
+        }
       }
     } catch (error) {
       toast({
