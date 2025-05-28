@@ -4,7 +4,7 @@ Transform your habits in 9 weeks with this comprehensive wellness tracking app. 
 
 ## 🚀 Deploy to Vercel in 5 Minutes!
 
-### Step 1: Set up Supabase (2 minutes)
+### Step 1: Set up Supabase (3 minutes)
 
 1. Go to [supabase.com](https://supabase.com) and create a free account
 2. Click "New Project"
@@ -18,7 +18,12 @@ Transform your habits in 9 weeks with this comprehensive wellness tracking app. 
    - **Project URL**: `https://YOUR_PROJECT_ID.supabase.co`
    - **anon public key**: `eyJhbGc...` (a long string)
 
-### Step 2: Deploy to Vercel (3 minutes)
+**Important**: After deployment, configure authentication:
+1. Go to your Supabase project → Authentication → URL Configuration
+2. Add your Vercel URL to "Site URL": `https://your-project-name.vercel.app`
+3. Add to "Redirect URLs": `https://your-project-name.vercel.app/**`
+
+### Step 2: Deploy to Vercel (2 minutes)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/nerveband/nine-week-challenge&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY&envDescription=Required%20Supabase%20credentials&envLink=https://github.com/nerveband/nine-week-challenge/blob/main/.env.local.example&project-name=nine-week-challenge&repository-name=nine-week-challenge)
 
