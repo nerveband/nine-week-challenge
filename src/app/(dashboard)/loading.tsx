@@ -24,7 +24,7 @@ export default function DashboardLoading() {
       </div>
 
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-brand-pink" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
       </div>
     </div>
   )

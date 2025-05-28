@@ -32,10 +32,11 @@ interface ProgressData {
 }
 
 const COLORS = {
-  primary: '#E5B5D3',
-  secondary: '#B8E5D5',
-  tertiary: '#C5D5F7',
-  quaternary: '#F7E5B5',
+  primary: '#FF4500',        // Vibrant orange-red
+  secondary: '#FF8C42',      // Warm orange
+  tertiary: '#3B82F6',       // Bright blue
+  quaternary: '#10B981',     // Success green
+  accent: '#F59E0B',         // Bold amber
 }
 
 export default function ProgressPage() {
@@ -243,7 +244,7 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Droplets className="h-4 w-4 text-brand-blue" />
+              <Droplets className="h-4 w-4 text-brand-info" />
               <span className="text-2xl font-bold">{stats.averageWater} oz</span>
             </div>
           </CardContent>
@@ -255,7 +256,7 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Moon className="h-4 w-4 text-brand-blue" />
+              <Moon className="h-4 w-4 text-brand-info" />
               <span className="text-2xl font-bold">{stats.averageSleep} hrs</span>
             </div>
           </CardContent>
@@ -267,7 +268,7 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Footprints className="h-4 w-4 text-brand-mint" />
+              <Footprints className="h-4 w-4 text-brand-success" />
               <span className="text-2xl font-bold">{stats.averageSteps.toLocaleString()}</span>
             </div>
           </CardContent>
@@ -279,7 +280,7 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-brand-pink" />
+              <Calendar className="h-4 w-4 text-brand-neutral" />
               <span className="text-2xl font-bold">{stats.totalDaysTracked}</span>
             </div>
           </CardContent>
@@ -291,7 +292,7 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-brand-pink rotate-180" />
+              <TrendingDown className="h-4 w-4 text-brand-primary rotate-180" />
               <span className="text-2xl font-bold">{stats.currentStreak} days</span>
             </div>
           </CardContent>
@@ -303,7 +304,7 @@ export default function ProgressPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Cookie className="h-4 w-4 text-brand-yellow" />
+              <Cookie className="h-4 w-4 text-brand-warning" />
               <span className="text-2xl font-bold">{stats.treatFrequency}%</span>
             </div>
           </CardContent>

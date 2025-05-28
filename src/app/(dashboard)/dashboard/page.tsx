@@ -69,7 +69,7 @@ export default async function DashboardPage() {
             </p>
             <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-brand-pink transition-all"
+                className="h-full bg-brand-primary transition-all"
                 style={{ width: `${completionPercentage}%` }}
               />
             </div>
@@ -97,7 +97,7 @@ export default async function DashboardPage() {
           <CardContent>
             {isMeasurementWeekNow ? (
               <>
-                <div className="text-2xl font-bold text-brand-pink">This Week!</div>
+                <div className="text-2xl font-bold text-brand-primary">This Week!</div>
                 <p className="text-xs text-muted-foreground">
                   Time to measure
                 </p>
@@ -131,28 +131,28 @@ export default async function DashboardPage() {
           {todayTracking ? (
             <div className="grid gap-4 md:grid-cols-4">
               <div className="flex items-center space-x-2">
-                <Moon className="h-5 w-5 text-brand-blue" />
+                <Moon className="h-5 w-5 text-brand-info" />
                 <div>
                   <p className="text-sm font-medium">Sleep</p>
                   <p className="text-2xl font-bold">{todayTracking.hours_sleep || '-'} hrs</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Droplets className="h-5 w-5 text-brand-blue" />
+                <Droplets className="h-5 w-5 text-brand-info" />
                 <div>
                   <p className="text-sm font-medium">Water</p>
                   <p className="text-2xl font-bold">{todayTracking.ounces_water || '-'} oz</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Footprints className="h-5 w-5 text-brand-mint" />
+                <Footprints className="h-5 w-5 text-brand-success" />
                 <div>
                   <p className="text-sm font-medium">Steps</p>
                   <p className="text-2xl font-bold">{todayTracking.steps?.toLocaleString() || '-'}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Activity className="h-5 w-5 text-brand-pink" />
+                <Activity className="h-5 w-5 text-brand-primary" />
                 <div>
                   <p className="text-sm font-medium">Meals</p>
                   <p className="text-2xl font-bold">{todayTracking.meals?.length || 0}/4</p>

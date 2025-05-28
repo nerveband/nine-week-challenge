@@ -11,7 +11,7 @@ export function FullnessScaleReference() {
         <div className="space-y-2">
           {FULLNESS_SCALE.map((level) => (
             <div key={level.value} className="flex items-start space-x-3">
-              <span className="font-semibold text-brand-pink w-8">{level.value}</span>
+              <span className="font-semibold text-brand-primary w-8">{level.value}</span>
               <span className="text-sm text-muted-foreground">{level.label}</span>
             </div>
           ))}

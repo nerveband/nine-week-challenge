@@ -271,15 +271,15 @@ export default function ProfilePage() {
               <div className="space-y-2">
                 <Label>Current Week</Label>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-brand-pink">Week {currentWeek}</span>
+                  <span className="text-2xl font-bold text-brand-primary">Week {currentWeek}</span>
                   <span className="text-sm text-muted-foreground">of 9</span>
                 </div>
               </div>
             </div>
 
             {!profile?.profile_complete && (
-              <div className="bg-brand-yellow/10 border border-brand-yellow rounded-lg p-4 flex items-start gap-2">
-                <AlertCircle className="h-5 w-5 text-brand-yellow mt-0.5" />
+              <div className="bg-brand-warning/10 border border-brand-warning rounded-lg p-4 flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-brand-warning mt-0.5" />
                 <div className="text-sm">
                   <p className="font-medium">Complete Your Profile</p>
                   <p className="text-muted-foreground">

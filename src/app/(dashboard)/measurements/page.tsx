@@ -273,7 +273,7 @@ export default function MeasurementsPage() {
       </div>
 
       {!canMeasure && (
-        <Card className="border-brand-yellow bg-brand-yellow/10">
+        <Card className="border-brand-warning bg-brand-warning/10">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />

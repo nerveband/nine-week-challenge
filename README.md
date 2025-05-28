@@ -122,11 +122,12 @@ Edit `tailwind.config.ts` to change the color scheme:
 
 ```javascript
 brand: {
-  pink: '#E5B5D3',       // Primary accent
-  'pink-light': '#F7D5E7', // Hover states
-  mint: '#B8E5D5',       // Success states
-  blue: '#C5D5F7',       // Info states
-  yellow: '#F7E5B5',     // Warning/treats
+  primary: '#FF4500',        // Vibrant orange-red from kettlebell icon
+  'primary-light': '#FF6B35', // Lighter coral tone
+  secondary: '#FF8C42',       // Warm orange from highlights
+  success: '#10B981',         // High contrast green
+  info: '#3B82F6',           // Bright blue
+  warning: '#F59E0B',        // Bold amber
 }
 ```
 
