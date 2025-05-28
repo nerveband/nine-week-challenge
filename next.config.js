@@ -25,7 +25,7 @@ const nextConfig = {
       },
       {
         // Static assets can be cached longer
-        source: '/.*\\.(png|jpg|jpeg|gif|svg|ico|webp|woff|woff2)$',
+        source: '/:path*.(png|jpg|jpeg|gif|svg|ico|webp|woff|woff2)',
         headers: [
           {
             key: 'Cache-Control',
