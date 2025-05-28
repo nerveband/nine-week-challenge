@@ -123,7 +123,7 @@ export default async function DashboardPage() {
       {/* Today's Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>Today's Summary</CardTitle>
+          <CardTitle>Today&apos;s Summary</CardTitle>
           <CardDescription>Your daily tracking progress</CardDescription>
         </CardHeader>
         <CardContent>

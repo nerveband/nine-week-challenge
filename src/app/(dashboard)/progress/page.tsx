@@ -15,7 +15,7 @@ export default function ProgressPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            You'll be able to see:
+            You&apos;ll be able to see:
           </p>
           <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground">
             <li>Body measurement trends</li>

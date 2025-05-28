@@ -15,7 +15,7 @@ export default function MeasurementsPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            You'll be able to track measurements for:
+            You&apos;ll be able to track measurements for:
           </p>
           <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground">
             <li>Hip</li>

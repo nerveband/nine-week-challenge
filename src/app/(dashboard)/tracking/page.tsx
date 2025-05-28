@@ -34,6 +34,7 @@ export default function TrackingPage() {
 
   useEffect(() => {
     loadUserDataAndTracking()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadUserDataAndTracking = async () => {
