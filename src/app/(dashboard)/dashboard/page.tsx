@@ -201,7 +201,7 @@ export default async function DashboardPage() {
 
       {/* Version Info */}
       <div className="text-center text-xs text-muted-foreground">
-        Last updated: {new Date().toLocaleString()}
+        Last updated: {new Date().toLocaleString()} • v2.1 🔥
       </div>
     </div>
   )
