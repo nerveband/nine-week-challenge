@@ -15,8 +15,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/use-toast'
 import { FullnessScaleReference } from '@/components/forms/fullness-scale-reference'
 import { dailyTrackingSchema, mealSchema, treatSchema, type DailyTrackingInput, type MealInput, type TreatInput } from '@/lib/validations'
-import { supabase } from '@/lib/supabase/client'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2, Moon, Droplets, Footprints, Trophy, Clock, Utensils, Cookie, Plus, X } from 'lucide-react'
+import type { Database } from '@/types/database'
 import { getCurrentWeek, getWeekPhase } from '@/lib/utils'
 import { TREAT_CATEGORIES, type MealType } from '@/types'
 
@@ -28,6 +29,7 @@ interface ExtendedDailyTrackingInput extends DailyTrackingInput {
 export default function TrackingPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const supabase = createClientComponentClient<Database>()
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [currentWeek, setCurrentWeek] = useState(1)

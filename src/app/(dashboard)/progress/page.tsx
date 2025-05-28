@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
-import { supabase } from '@/lib/supabase/client'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2, Download, TrendingDown, Droplets, Moon, Footprints, Cookie, Calendar } from 'lucide-react'
+import type { Database } from '@/types/database'
 import { getCurrentWeek, getStreakDays } from '@/lib/utils'
 import {
   LineChart,
@@ -41,6 +42,7 @@ const COLORS = {
 
 export default function ProgressPage() {
   const router = useRouter()
+  const supabase = createClientComponentClient<Database>()
   const [isLoading, setIsLoading] = useState(false)
   const [currentWeek, setCurrentWeek] = useState(1)
   const [progressData, setProgressData] = useState<ProgressData>({

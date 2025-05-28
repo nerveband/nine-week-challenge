@@ -11,8 +11,9 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/use-toast'
 import { measurementSchema, type MeasurementInput } from '@/lib/validations'
-import { supabase } from '@/lib/supabase/client'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2, Ruler, TrendingDown, Calendar, Camera } from 'lucide-react'
+import type { Database } from '@/types/database'
 import { getCurrentWeek, isMeasurementWeek, MEASUREMENT_WEEKS } from '@/lib/utils'
 
 interface MeasurementAverage {
@@ -48,6 +49,7 @@ interface MeasurementReading {
 export default function MeasurementsPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const supabase = createClientComponentClient<Database>()
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [currentWeek, setCurrentWeek] = useState(1)

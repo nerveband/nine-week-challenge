@@ -5,8 +5,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { supabase } from '@/lib/supabase/client'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useToast } from '@/components/ui/use-toast'
+import type { Database } from '@/types/database'
 import {
   Activity,
   BarChart3,
@@ -36,6 +37,7 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const { toast } = useToast()
+  const supabase = createClientComponentClient<Database>()
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut()
