@@ -374,84 +374,70 @@ export default function MeasurementsPage() {
                 {/* Body Diagram */}
                 <div className="flex justify-center">
                   <div className="relative">
-                    {/* Female body silhouette - anatomically correct */}
-                    <svg width="200" height="400" viewBox="0 0 200 400" className="text-gray-300">
-                      {/* Head */}
-                      <ellipse cx="100" cy="35" rx="20" ry="25" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
-                      
-                      {/* Neck */}
-                      <rect x="92" y="58" width="16" height="18" fill="#E5E7EB" />
-                      
-                      {/* Shoulders and Upper Arms */}
-                      <path d="M 92 76 Q 85 76 75 78 L 60 82 L 55 88 L 50 95 L 48 110 L 48 125 L 50 140 L 55 155 L 58 165 L 62 170 L 65 172 M 108 76 Q 115 76 125 78 L 140 82 L 145 88 L 150 95 L 152 110 L 152 125 L 150 140 L 145 155 L 142 165 L 138 170 L 135 172" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
-                      
-                      {/* Upper body outline */}
-                      <path d="M 75 78 Q 85 76 92 76 L 108 76 Q 115 76 125 78 L 128 85 L 130 95 L 132 105 L 133 115 L 134 125 L 133 135 L 130 145 L 125 152 L 120 158 L 115 162 L 110 165 L 105 167 L 100 168 L 95 167 L 90 165 L 85 162 L 80 158 L 75 152 L 70 145 L 67 135 L 66 125 L 67 115 L 68 105 L 70 95 L 72 85 L 75 78 Z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
-                      
-                      {/* Waist */}
-                      <path d="M 80 158 Q 85 162 90 165 L 95 167 L 100 168 L 105 167 L 110 165 Q 115 162 120 158 L 118 175 L 115 185 L 110 190 L 100 192 L 90 190 L 85 185 L 82 175 L 80 158 Z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
-                      
-                      {/* Hips and Upper Thighs */}
-                      <path d="M 82 175 L 80 185 L 75 195 L 70 205 L 68 215 L 67 225 L 68 235 L 70 245 L 73 255 L 75 265 L 78 270 L 82 272 L 85 270 L 88 265 L 90 255 L 92 245 L 93 235 L 94 225 L 95 215 L 96 210 L 98 205 L 100 203 L 102 205 L 104 210 L 105 215 L 106 225 L 107 235 L 108 245 L 110 255 L 112 265 L 115 270 L 118 272 L 122 270 L 125 265 L 127 255 L 130 245 L 132 235 L 133 225 L 132 215 L 130 205 L 125 195 L 120 185 L 118 175" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
-                      
-                      {/* Left Leg */}
-                      <path d="M 78 270 L 77 280 L 76 300 L 75 320 L 74 340 L 73 360 L 72 375 L 72 380 L 80 385 L 88 385 L 96 380 L 96 375 L 95 360 L 94 340 L 93 320 L 92 300 L 91 280 L 90 270" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
-                      
-                      {/* Right Leg */}
-                      <path d="M 110 270 L 109 280 L 108 300 L 107 320 L 106 340 L 105 360 L 104 375 L 104 380 L 112 385 L 120 385 L 128 380 L 128 375 L 127 360 L 126 340 L 125 320 L 124 300 L 123 280 L 122 270" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
+                    {/* Human body silhouette - based on provided SVG */}
+                    <svg width="200" height="400" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" className="w-full h-full max-w-[200px] mx-auto">
+                      <g transform="scale(1, 1)">
+                        <path d="m60.238 46.957 2.7812 7.9102c0.46875 1.3242 1.4805 2.4023 2.7812 2.957 3.6992 1.7188 8.1094-1.9922 6.8984-5.9297l-5.6758-20.918c-0.97266-3.5859-4-6.2539-7.707-6.7969l-3.918-0.57422c1.2617-1.3359 2.0469-3.1211 2.0469-5.0977v-4.8125c-0.30469-9.8164-14.578-9.8633-14.895 0v4.8125c0 1.9766 0.78516 3.7617 2.0469 5.0977l-3.918 0.57422c-3.707 0.54297-6.7344 3.207-7.707 6.7969l-5.6758 20.918c-1.5469 6.2383 7.4375 8.9492 9.6836 2.9688 0 0 2.7773-7.9062 2.7773-7.9062l0.10547 3c0.34766 0.79297-2.8867 32.477-2.957 34.145-3.9141-0.11328-7.1836 3.0273-7.1797 6.9102 0 1.5078 1.2305 2.7344 2.7461 2.7344h11.16c1.9609 0 3.6133-1.4531 3.8516-3.3828l2.5078-20.18 2.5078 20.18c0.23828 1.9297 1.8945 3.3828 3.8516 3.3828h11.16c1.5156 0 2.7461-1.2266 2.7461-2.7344 0.007813-3.8867-3.2656-7.0234-7.1797-6.9102-0.26172-4.5938-3.5508-33.227-2.8477-37.148zm-14.562-33.258c0.14844-5.6992 8.4961-5.6992 8.6445 0v4.8125c-0.14844 5.6953-8.4961 5.6992-8.6445 0v-4.8125zm15.988 73.531h1.6289c1.9883 0 3.6289 1.4922 3.8281 3.3945h-10.762c-0.38281 0-0.70703-0.27734-0.75391-0.64062-0.19141-2.3789-4.6992-34.934-4.0469-36.406-0.035156-2.0547-3.0898-2.0547-3.125 0v3.8516l-4.0469 32.555c-0.046875 0.36719-0.37109 0.64062-0.75391 0.64062h-10.762c0.19922-1.9062 1.8398-3.3945 3.8281-3.3945h1.6289c0.80859 0 1.4805-0.61328 1.5547-1.418 0.066407-1.5234 3.5273-35.84 3.0977-35.965 0 0-0.46484-13.137-0.46484-13.148-0.027344-0.84375-0.72266-1.5078-1.5586-1.5078-0.88281 0-1.5977 0.73438-1.5625 1.6172l0.054688 1.5898-5.4219 15.43c-0.17969 0.50781-0.55859 0.90625-1.0625 1.125-1.3984 0.66406-3.1211-0.73828-2.6602-2.2383l5.6758-20.918c0.64844-2.3867 2.668-4.1602 5.1445-4.5234l8.8672-1.3008 8.8672 1.3008c2.4766 0.36328 4.4961 2.1367 5.1445 4.5234l5.6758 20.914c0.45312 1.5-1.2539 2.9023-2.6602 2.2383-0.50391-0.21484-0.88281-0.61328-1.0625-1.1211l-5.4219-15.434 0.054688-1.5859c0.039062-2.0391-3.0117-2.1719-3.1211-0.10938-0.054688 0.82031-0.40625 11.977-0.46484 13.148-0.42578 0.13281 3.0273 34.465 3.0977 35.965 0.074219 0.80469 0.75 1.418 1.5547 1.418z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="0.5"/>
+                      </g>
                     </svg>
                     
                     {/* Measurement lines with labels */}
-                    <div className="absolute top-0 left-0 w-full h-full">
+                    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
                       {/* Chest (bra line) */}
-                      <div className="absolute" style={{ top: '35%', left: '33%', right: '33%' }}>
-                        <div className="w-full h-0.5 bg-red-400 relative">
-                          <div className="absolute -right-20 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-red-600 font-medium whitespace-nowrap">
+                      <div className="absolute w-full flex items-center justify-center" style={{ top: '35%' }}>
+                        <div className="relative flex items-center" style={{ width: '34%' }}>
+                          <div className="flex-1 h-0.5 bg-red-400"></div>
+                          <div className="absolute -right-2 translate-x-full top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border border-red-400 text-red-600 font-medium whitespace-nowrap shadow-sm pointer-events-auto">
                             Chest (bra line)
                           </div>
                         </div>
                       </div>
                       
                       {/* Chest 2 (fullest part) */}
-                      <div className="absolute" style={{ top: '38%', left: '31%', right: '31%' }}>
-                        <div className="w-full h-0.5 bg-pink-400 relative">
-                          <div className="absolute -left-24 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-pink-600 font-medium whitespace-nowrap">
+                      <div className="absolute w-full flex items-center justify-center" style={{ top: '38%' }}>
+                        <div className="relative flex items-center" style={{ width: '38%' }}>
+                          <div className="absolute -left-2 -translate-x-full top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border border-pink-400 text-pink-600 font-medium whitespace-nowrap shadow-sm pointer-events-auto">
                             Chest 2 (fullest)
                           </div>
+                          <div className="flex-1 h-0.5 bg-pink-400"></div>
                         </div>
                       </div>
                       
                       {/* Waist (belly button) */}
-                      <div className="absolute" style={{ top: '45%', left: '40%', right: '40%' }}>
-                        <div className="w-full h-0.5 bg-blue-400 relative">
-                          <div className="absolute -right-24 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-blue-600 font-medium whitespace-nowrap">
+                      <div className="absolute w-full flex items-center justify-center" style={{ top: '48%' }}>
+                        <div className="relative flex items-center" style={{ width: '20%' }}>
+                          <div className="flex-1 h-0.5 bg-blue-400"></div>
+                          <div className="absolute -right-2 translate-x-full top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border border-blue-400 text-blue-600 font-medium whitespace-nowrap shadow-sm pointer-events-auto">
                             Waist (belly button)
                           </div>
                         </div>
                       </div>
                       
                       {/* Hip (biggest point) */}
-                      <div className="absolute" style={{ top: '55%', left: '35%', right: '35%' }}>
-                        <div className="w-full h-0.5 bg-green-400 relative">
-                          <div className="absolute -left-20 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-green-600 font-medium whitespace-nowrap">
+                      <div className="absolute w-full flex items-center justify-center" style={{ top: '58%' }}>
+                        <div className="relative flex items-center" style={{ width: '30%' }}>
+                          <div className="absolute -left-2 -translate-x-full top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border border-green-400 text-green-600 font-medium whitespace-nowrap shadow-sm pointer-events-auto">
                             Hip (biggest point)
                           </div>
+                          <div className="flex-1 h-0.5 bg-green-400"></div>
                         </div>
                       </div>
                       
                       {/* Thigh (right thigh) */}
-                      <div className="absolute" style={{ top: '72%', left: '54%', width: '18%' }}>
-                        <div className="w-full h-0.5 bg-purple-400 relative">
-                          <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-purple-600 font-medium whitespace-nowrap">
+                      <div className="absolute flex items-center" style={{ top: '75%', left: '54%', width: '18%' }}>
+                        <div className="relative w-full flex items-center">
+                          <div className="flex-1 h-0.5 bg-purple-400"></div>
+                          <div className="absolute -right-2 translate-x-full top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border border-purple-400 text-purple-600 font-medium whitespace-nowrap shadow-sm pointer-events-auto">
                             Right Thigh
                           </div>
                         </div>
                       </div>
                       
                       {/* Bicep (right arm) */}
-                      <div className="absolute" style={{ top: '30%', left: '67%', width: '20%' }}>
-                        <div className="w-full h-0.5 bg-orange-400 relative">
-                          <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-orange-600 font-medium whitespace-nowrap">
+                      <div className="absolute flex items-center" style={{ top: '32%', left: '63%', width: '24%' }}>
+                        <div className="relative w-full flex items-center">
+                          <div className="flex-1 h-0.5 bg-orange-400"></div>
+                          <div className="absolute -right-2 translate-x-full top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border border-orange-400 text-orange-600 font-medium whitespace-nowrap shadow-sm pointer-events-auto">
                             Right Bicep
                           </div>
                         </div>
