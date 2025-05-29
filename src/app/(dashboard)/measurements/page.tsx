@@ -266,51 +266,56 @@ export default function MeasurementsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Body Measurements</h1>
-        <p className="text-muted-foreground">
-          Week {currentWeek} - {canMeasure ? 'Measurement Week!' : `Next measurement in week ${MEASUREMENT_WEEKS.find(w => w > currentWeek) || 9}`}
+    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
+      {/* Mobile-optimized header */}
+      <div className="animate-fade-in">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Body Measurements</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">
+          Week {currentWeek} • {canMeasure ? '📏 Measurement Week!' : `Next measurement in week ${MEASUREMENT_WEEKS.find(w => w > currentWeek) || 9}`}
         </p>
       </div>
 
       {!canMeasure && (
-        <Card className="border-brand-warning bg-brand-warning/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+        <Card className="border-brand-yellow bg-brand-yellow/10 animate-fade-in-delay">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Calendar className="h-5 w-5 text-brand-yellow" />
               Not a Measurement Week
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Measurements are taken on weeks {MEASUREMENT_WEEKS.join(', ')}. Check back in week {MEASUREMENT_WEEKS.find(w => w > currentWeek) || 9}!</p>
+            <p className="text-sm sm:text-base">
+              Measurements are taken on weeks {MEASUREMENT_WEEKS.join(', ')}. 
+              <br className="sm:hidden" />
+              <span className="font-medium">Check back in week {MEASUREMENT_WEEKS.find(w => w > currentWeek) || 9}!</span>
+            </p>
           </CardContent>
         </Card>
       )}
 
-      {/* Previous Measurements Summary */}
+      {/* Previous Measurements Summary - Mobile optimized */}
       {previousMeasurements.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Progress</CardTitle>
-            <CardDescription>Measurements from previous weeks</CardDescription>
+        <Card className="animate-fade-in-delay">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Your Progress</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Measurements from previous weeks</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3">
               {(['hip', 'waist', 'chest', 'chest_2', 'thigh', 'bicep'] as const).map(measurement => {
                 const progress = getProgress(measurement)
                 const latest = previousMeasurements[previousMeasurements.length - 1]?.[measurement]
                 
                 return (
-                  <div key={measurement} className="space-y-1">
-                    <p className="text-sm font-medium capitalize">
-                      {measurement === 'chest_2' ? 'Chest 2 (Under Breast)' : measurement}
+                  <div key={measurement} className="bg-gray-50 rounded-lg p-3 space-y-1 hover:bg-gray-100 transition-colors">
+                    <p className="text-xs sm:text-sm font-medium capitalize">
+                      {measurement === 'chest_2' ? 'Chest 2' : measurement}
                     </p>
-                    <p className="text-2xl font-bold">{latest || '-'}&quot;</p>
+                    <p className="text-lg sm:text-2xl font-bold">{latest || '-'}&quot;</p>
                     {progress && (
-                      <p className={`text-sm flex items-center gap-1 ${progress.difference < 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                      <p className={`text-xs flex items-center gap-1 ${progress.difference < 0 ? 'text-green-600' : 'text-orange-600'}`}>
                         <TrendingDown className={`h-3 w-3 ${progress.difference > 0 ? 'rotate-180' : ''}`} />
-                        {Math.abs(progress.difference)}&quot; ({Math.abs(progress.percentage)}%)
+                        {Math.abs(progress.difference)}&quot;
                       </p>
                     )}
                   </div>
@@ -322,58 +327,68 @@ export default function MeasurementsPage() {
       )}
 
       {canMeasure && (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 animate-fade-in-delay-2">
           <Card>
-            <CardHeader>
-              <CardTitle>Take Measurements</CardTitle>
-              <CardDescription>
-                Take 3 measurements for each body part and we&apos;ll calculate the average for you
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Take Measurements</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Take 3 measurements for each body part and we&apos;ll calculate the average
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="hip" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-6">
-                  <TabsTrigger value="hip">Hip</TabsTrigger>
-                  <TabsTrigger value="waist">Waist</TabsTrigger>
-                  <TabsTrigger value="chest">Chest</TabsTrigger>
-                  <TabsTrigger value="chest_2">Chest 2</TabsTrigger>
-                  <TabsTrigger value="thigh">Thigh</TabsTrigger>
-                  <TabsTrigger value="bicep">Bicep</TabsTrigger>
-                </TabsList>
+                {/* Mobile scrollable tabs */}
+                <div className="-mx-4 px-4 overflow-x-auto">
+                  <TabsList className="grid w-max grid-cols-6 gap-1 min-w-full">
+                    <TabsTrigger value="hip" className="text-xs">Hip</TabsTrigger>
+                    <TabsTrigger value="waist" className="text-xs">Waist</TabsTrigger>
+                    <TabsTrigger value="chest" className="text-xs">Chest</TabsTrigger>
+                    <TabsTrigger value="chest_2" className="text-xs">Chest 2</TabsTrigger>
+                    <TabsTrigger value="thigh" className="text-xs">Thigh</TabsTrigger>
+                    <TabsTrigger value="bicep" className="text-xs">Bicep</TabsTrigger>
+                  </TabsList>
+                </div>
 
                 {(['hip', 'waist', 'chest', 'chest_2', 'thigh', 'bicep'] as const).map(measurement => (
                   <TabsContent key={measurement} value={measurement} className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-semibold capitalize mb-2">
+                    <div className="bg-brand-pink/5 rounded-lg p-4">
+                      <h3 className="text-base sm:text-lg font-semibold capitalize mb-1">
                         {measurement === 'chest_2' ? 'Chest 2 (Under Breast)' : measurement} Measurements
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         Take 3 measurements and we&apos;ll calculate the average
                       </p>
                     </div>
 
-                    <div className="grid gap-4 md:grid-cols-3">
+                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
                       {[1, 2, 3].map(num => (
                         <div key={num} className="space-y-2">
-                          <Label htmlFor={`${measurement}${num}`}>Reading {num}</Label>
+                          <Label htmlFor={`${measurement}${num}`} className="text-sm font-medium">
+                            Reading {num}
+                          </Label>
                           <Input
                             id={`${measurement}${num}`}
                             type="number"
+                            inputMode="decimal"
                             step="0.1"
                             min="0"
                             max="100"
                             placeholder="0.0"
+                            className="h-12 text-base"
                             onChange={(e) => updateReading(measurement, num, e.target.value)}
                           />
                         </div>
                       ))}
                     </div>
 
-                    <div className="bg-muted p-4 rounded-lg">
+                    <div className="bg-gradient-to-r from-brand-mint/10 to-brand-blue/10 p-4 rounded-lg border border-brand-mint/20">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">Average:</span>
-                        <span className="text-2xl font-bold">
-                          {averages[measurement] ? `${averages[measurement]}"` : '-'}
+                        <span className="font-medium flex items-center gap-2">
+                          <Ruler className="h-4 w-4 text-brand-mint" />
+                          Average:
+                        </span>
+                        <span className="text-xl sm:text-2xl font-bold text-brand-mint">
+                          {averages[measurement] ? `${averages[measurement]}"` : '—'}
                         </span>
                       </div>
                     </div>
@@ -389,20 +404,43 @@ export default function MeasurementsPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Progress Photo</CardTitle>
-              <CardDescription>Optional: Take a photo to track visual progress</CardDescription>
+          <Card className="bg-gray-50 border-dashed">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Camera className="h-5 w-5 text-brand-blue" />
+                Progress Photo
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Optional: Take a photo to track visual progress</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button type="button" variant="outline" className="w-full">
+              <Button type="button" variant="outline" className="w-full h-12" disabled>
                 <Camera className="mr-2 h-4 w-4" />
                 Take Photo (Coming Soon)
               </Button>
             </CardContent>
           </Card>
 
-          <div className="flex justify-end">
+          {/* Mobile floating save button */}
+          <div className="md:hidden fixed bottom-20 left-4 right-4 z-20">
+            <Button 
+              type="submit" 
+              variant="brand" 
+              className="w-full h-12 shadow-lg"
+              disabled={isSaving || !canMeasure}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Measurements'
+              )}
+            </Button>
+          </div>
+
+          {/* Desktop save button */}
+          <div className="hidden md:flex justify-end">
             <Button type="submit" variant="brand" size="lg" disabled={isSaving || !canMeasure}>
               {isSaving ? (
                 <>

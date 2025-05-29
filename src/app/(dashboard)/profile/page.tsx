@@ -141,111 +141,125 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
+      {/* Mobile-optimized header */}
+      <div className="animate-fade-in">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Profile</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Manage your personal information
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 animate-fade-in-delay">
         <Card>
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-            <CardDescription>Update your personal details</CardDescription>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <User className="h-5 w-5 text-brand-pink" />
+              Personal Information
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Update your personal details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name" className="text-sm font-medium">Name</Label>
                 <Input
                   id="name"
                   type="text"
                   placeholder="Your name"
+                  className="h-12"
                   {...register('name')}
                 />
                 {errors.name && (
-                  <p className="text-sm text-red-600">{errors.name.message}</p>
+                  <p className="text-xs text-red-600">{errors.name.message}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="birthdate">Birthdate</Label>
+                <Label htmlFor="birthdate" className="text-sm font-medium">Birthdate</Label>
                 <Input
                   id="birthdate"
                   type="date"
+                  className="h-12"
                   {...register('birthdate')}
                 />
                 {errors.birthdate && (
-                  <p className="text-sm text-red-600">{errors.birthdate.message}</p>
+                  <p className="text-xs text-red-600">{errors.birthdate.message}</p>
                 )}
                 {profile?.birthdate && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Age: {calculateAge(profile.birthdate)} years
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Height</Label>
+                <Label className="text-sm font-medium">Height</Label>
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <Input
                       type="number"
+                      inputMode="numeric"
                       min="3"
                       max="8"
                       placeholder="Feet"
+                      className="h-12"
                       {...register('height_feet', { valueAsNumber: true })}
                     />
                   </div>
                   <div className="flex-1">
                     <Input
                       type="number"
+                      inputMode="numeric"
                       min="0"
                       max="11"
                       placeholder="Inches"
+                      className="h-12"
                       {...register('height_inches', { valueAsNumber: true })}
                     />
                   </div>
                 </div>
                 {(errors.height_feet || errors.height_inches) && (
-                  <p className="text-sm text-red-600">Please enter a valid height</p>
+                  <p className="text-xs text-red-600">Please enter a valid height</p>
                 )}
               </div>
 
               <div className="grid gap-4 grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="starting_weight">Starting Weight</Label>
+                  <Label htmlFor="starting_weight" className="text-sm font-medium">Starting Weight</Label>
                   <Input
                     id="starting_weight"
                     type="number"
+                    inputMode="decimal"
                     step="0.1"
                     min="50"
                     max="500"
                     placeholder="lbs"
+                    className="h-12"
                     {...register('starting_weight', { valueAsNumber: true })}
                   />
                   {errors.starting_weight && (
-                    <p className="text-sm text-red-600">{errors.starting_weight.message}</p>
+                    <p className="text-xs text-red-600">{errors.starting_weight.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="goal_weight">Goal Weight</Label>
+                  <Label htmlFor="goal_weight" className="text-sm font-medium">Goal Weight</Label>
                   <Input
                     id="goal_weight"
                     type="number"
+                    inputMode="decimal"
                     step="0.1"
                     min="50"
                     max="500"
                     placeholder="lbs"
+                    className="h-12"
                     {...register('goal_weight', { valueAsNumber: true })}
                   />
                   {errors.goal_weight && (
-                    <p className="text-sm text-red-600">{errors.goal_weight.message}</p>
+                    <p className="text-xs text-red-600">{errors.goal_weight.message}</p>
                   )}
                 </div>
               </div>
@@ -254,37 +268,40 @@ export default function ProfilePage() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Program Information</CardTitle>
-            <CardDescription>Your Nine Week Challenge details</CardDescription>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-brand-blue" />
+              Program Information
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Your Nine Week Challenge details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Start Date</Label>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="bg-gray-50 rounded-lg p-3">
+                <Label className="text-xs sm:text-sm font-medium text-muted-foreground">Start Date</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Calendar className="h-4 w-4 text-brand-blue" />
                   <span className="font-medium">
                     {profile ? formatDate(profile.program_start_date) : '-'}
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Current Week</Label>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-brand-primary">Week {currentWeek}</span>
+              <div className="bg-gradient-to-r from-brand-pink/10 to-brand-mint/10 rounded-lg p-3 border border-brand-pink/20">
+                <Label className="text-xs sm:text-sm font-medium text-muted-foreground">Current Week</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xl sm:text-2xl font-bold text-brand-pink">Week {currentWeek}</span>
                   <span className="text-sm text-muted-foreground">of 9</span>
                 </div>
               </div>
             </div>
 
             {!profile?.profile_complete && (
-              <div className="bg-brand-warning/10 border border-brand-warning rounded-lg p-4 flex items-start gap-2">
-                <AlertCircle className="h-5 w-5 text-brand-warning mt-0.5" />
+              <div className="bg-brand-yellow/10 border border-brand-yellow rounded-lg p-4 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-brand-yellow mt-0.5 flex-shrink-0" />
                 <div className="text-sm">
                   <p className="font-medium">Complete Your Profile</p>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground text-xs sm:text-sm mt-1">
                     Please fill in all your information to get the most out of your Nine Week Challenge experience.
                   </p>
                 </div>
@@ -293,7 +310,27 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-between">
+        {/* Mobile floating save button */}
+        <div className="md:hidden fixed bottom-20 left-4 right-4 z-20">
+          <Button 
+            type="submit" 
+            variant="brand" 
+            className="w-full h-12 shadow-lg"
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Profile'
+            )}
+          </Button>
+        </div>
+
+        {/* Desktop buttons */}
+        <div className="hidden md:flex justify-between">
           <Button type="button" variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out
@@ -308,6 +345,14 @@ export default function ProfilePage() {
             ) : (
               'Save Profile'
             )}
+          </Button>
+        </div>
+
+        {/* Mobile sign out button */}
+        <div className="md:hidden pt-4">
+          <Button type="button" variant="outline" onClick={handleSignOut} className="w-full">
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
           </Button>
         </div>
       </form>

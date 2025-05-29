@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Loader2, Download, TrendingDown, Droplets, Moon, Footprints, Cookie, Calendar } from 'lucide-react'
+import { Loader2, Download, TrendingDown, Droplets, Moon, Footprints, Cookie, Calendar, Utensils } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { getCurrentWeek, getStreakDays } from '@/lib/utils'
 import {
@@ -224,128 +224,158 @@ export default function ProgressPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-start">
+    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
+      {/* Mobile-optimized header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 animate-fade-in">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Progress</h1>
-          <p className="text-muted-foreground">
-            Week {currentWeek} - Your transformation journey
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Progress</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Week {currentWeek} • Your transformation journey
           </p>
         </div>
-        <Button onClick={exportData} variant="outline">
+        <Button onClick={exportData} variant="outline" size="sm" className="w-full sm:w-auto">
           <Download className="mr-2 h-4 w-4" />
           Export Data
         </Button>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <Card>
+      {/* Stats Overview - Mobile optimized grid */}
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 animate-fade-in-delay">
+        <Card className="hover:shadow-md transition-shadow touch-manipulation">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg Water</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Avg Water</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
-              <Droplets className="h-4 w-4 text-brand-info" />
-              <span className="text-2xl font-bold">{stats.averageWater} oz</span>
+            <div className="flex items-center justify-between">
+              <Droplets className="h-4 w-4 text-brand-blue" />
+              <span className="text-lg sm:text-2xl font-bold">{stats.averageWater}</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">ounces</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow touch-manipulation">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg Sleep</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Avg Sleep</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
-              <Moon className="h-4 w-4 text-brand-info" />
-              <span className="text-2xl font-bold">{stats.averageSleep} hrs</span>
+            <div className="flex items-center justify-between">
+              <Moon className="h-4 w-4 text-brand-blue" />
+              <span className="text-lg sm:text-2xl font-bold">{stats.averageSleep}</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">hours</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow touch-manipulation">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg Steps</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Avg Steps</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
-              <Footprints className="h-4 w-4 text-brand-success" />
-              <span className="text-2xl font-bold">{stats.averageSteps.toLocaleString()}</span>
+            <div className="flex items-center justify-between">
+              <Footprints className="h-4 w-4 text-brand-mint" />
+              <span className="text-lg sm:text-2xl font-bold">{(stats.averageSteps / 1000).toFixed(1)}k</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">daily</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow touch-manipulation">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Days Tracked</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Days Tracked</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-brand-neutral" />
-              <span className="text-2xl font-bold">{stats.totalDaysTracked}</span>
+            <div className="flex items-center justify-between">
+              <Calendar className="h-4 w-4 text-brand-pink" />
+              <span className="text-lg sm:text-2xl font-bold">{stats.totalDaysTracked}</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">total</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow touch-manipulation">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Current Streak</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-brand-primary rotate-180" />
-              <span className="text-2xl font-bold">{stats.currentStreak} days</span>
+            <div className="flex items-center justify-between">
+              <TrendingDown className="h-4 w-4 text-brand-yellow rotate-180" />
+              <span className="text-lg sm:text-2xl font-bold">{stats.currentStreak}</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">days</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-md transition-shadow touch-manipulation">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Treat Days</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Treat Days</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
-              <Cookie className="h-4 w-4 text-brand-warning" />
-              <span className="text-2xl font-bold">{stats.treatFrequency}%</span>
+            <div className="flex items-center justify-between">
+              <Cookie className="h-4 w-4 text-brand-yellow" />
+              <span className="text-lg sm:text-2xl font-bold">{stats.treatFrequency}%</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">of days</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts */}
-      <Tabs defaultValue="measurements" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
-          <TabsTrigger value="measurements">Measurements</TabsTrigger>
-          <TabsTrigger value="habits">Daily Habits</TabsTrigger>
-          <TabsTrigger value="hunger">Hunger/Fullness</TabsTrigger>
-          <TabsTrigger value="treats">Treats</TabsTrigger>
-        </TabsList>
+      {/* Charts - Mobile optimized tabs */}
+      <Tabs defaultValue="measurements" className="space-y-4 animate-fade-in-delay-2">
+        {/* Mobile scrollable tabs */}
+        <div className="-mx-4 px-4 overflow-x-auto">
+          <TabsList className="grid w-max grid-cols-4 gap-1 min-w-full">
+            <TabsTrigger value="measurements" className="text-xs sm:text-sm">Measurements</TabsTrigger>
+            <TabsTrigger value="habits" className="text-xs sm:text-sm">Daily Habits</TabsTrigger>
+            <TabsTrigger value="hunger" className="text-xs sm:text-sm">Hunger/Fullness</TabsTrigger>
+            <TabsTrigger value="treats" className="text-xs sm:text-sm">Treats</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="measurements" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Body Measurements Over Time</CardTitle>
-              <CardDescription>Track your physical transformation</CardDescription>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Body Measurements Over Time</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Track your physical transformation</CardDescription>
             </CardHeader>
             <CardContent>
               {progressData.measurements.length > 0 ? (
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={getMeasurementChartData()}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="week" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="Hip" stroke={COLORS.primary} strokeWidth={2} />
-                    <Line type="monotone" dataKey="Waist" stroke={COLORS.secondary} strokeWidth={2} />
-                    <Line type="monotone" dataKey="Chest" stroke={COLORS.tertiary} strokeWidth={2} />
-                    <Line type="monotone" dataKey="Thigh" stroke={COLORS.quaternary} strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={300} className="sm:!h-[400px]">
+                    <LineChart data={getMeasurementChartData()}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey="week" 
+                        tick={{ fontSize: 12 }}
+                        className="text-xs"
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        className="text-xs"
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          background: 'white', 
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} />
+                      <Line type="monotone" dataKey="Hip" stroke="#E5B5D3" strokeWidth={2} dot={{ r: 3 }} />
+                      <Line type="monotone" dataKey="Waist" stroke="#B8E5D5" strokeWidth={2} dot={{ r: 3 }} />
+                      <Line type="monotone" dataKey="Chest" stroke="#C5D5F7" strokeWidth={2} dot={{ r: 3 }} />
+                      <Line type="monotone" dataKey="Thigh" stroke="#F7E5B5" strokeWidth={2} dot={{ r: 3 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No measurement data yet. Measurements are taken on weeks 1, 3, 5, 7, and 9.
+                  <div className="w-16 h-16 bg-brand-pink/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <TrendingDown className="h-8 w-8 text-brand-pink" />
+                  </div>
+                  <p className="text-sm">No measurement data yet.</p>
+                  <p className="text-xs mt-1">Measurements are taken on weeks 1, 3, 5, 7, and 9.</p>
                 </div>
               )}
             </CardContent>
@@ -354,27 +384,46 @@ export default function ProgressPage() {
 
         <TabsContent value="habits" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Daily Habits Trend</CardTitle>
-              <CardDescription>Water (oz), Sleep (hrs x10), Steps (/100)</CardDescription>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Daily Habits Trend</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Water (oz), Sleep (hrs x10), Steps (/100)</CardDescription>
             </CardHeader>
             <CardContent>
               {progressData.dailyTracking.length > 0 ? (
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={getDailyHabitsChartData()}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="Water" fill={COLORS.secondary} />
-                    <Bar dataKey="Sleep" fill={COLORS.tertiary} />
-                    <Bar dataKey="Steps" fill={COLORS.primary} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={300} className="sm:!h-[400px]">
+                    <BarChart data={getDailyHabitsChartData()}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 12 }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={60}
+                      />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          background: 'white', 
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} />
+                      <Bar dataKey="Water" fill="#C5D5F7" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="Sleep" fill="#B8E5D5" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="Steps" fill="#E5B5D3" radius={[2, 2, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No tracking data yet. Start tracking your daily habits!
+                  <div className="w-16 h-16 bg-brand-mint/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Droplets className="h-8 w-8 text-brand-mint" />
+                  </div>
+                  <p className="text-sm">No tracking data yet.</p>
+                  <p className="text-xs mt-1">Start tracking your daily habits!</p>
                 </div>
               )}
             </CardContent>
@@ -383,26 +432,48 @@ export default function ProgressPage() {
 
         <TabsContent value="hunger" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Hunger & Fullness Patterns</CardTitle>
-              <CardDescription>Average levels throughout your journey</CardDescription>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Hunger & Fullness Patterns</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Average levels throughout your journey</CardDescription>
             </CardHeader>
             <CardContent>
               {progressData.meals.length > 0 ? (
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={getHungerFullnessData()}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis domain={[0, 10]} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="Avg Hunger" stroke={COLORS.primary} strokeWidth={2} />
-                    <Line type="monotone" dataKey="Avg Fullness" stroke={COLORS.secondary} strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={300} className="sm:!h-[400px]">
+                    <LineChart data={getHungerFullnessData()}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 12 }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={60}
+                      />
+                      <YAxis 
+                        domain={[0, 10]} 
+                        tick={{ fontSize: 12 }}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          background: 'white', 
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px' }} />
+                      <Line type="monotone" dataKey="Avg Hunger" stroke="#E5B5D3" strokeWidth={3} dot={{ r: 4 }} />
+                      <Line type="monotone" dataKey="Avg Fullness" stroke="#B8E5D5" strokeWidth={3} dot={{ r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No meal tracking data yet. Meal tracking starts in week 4.
+                  <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Utensils className="h-8 w-8 text-brand-blue" />
+                  </div>
+                  <p className="text-sm">No meal tracking data yet.</p>
+                  <p className="text-xs mt-1">Meal tracking starts in week 4.</p>
                 </div>
               )}
             </CardContent>
@@ -411,34 +482,53 @@ export default function ProgressPage() {
 
         <TabsContent value="treats" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Treat Distribution</CardTitle>
-              <CardDescription>Types of treats enjoyed during your journey</CardDescription>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Treat Distribution</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Types of treats enjoyed during your journey</CardDescription>
             </CardHeader>
             <CardContent>
               {progressData.treats.length > 0 ? (
-                <ResponsiveContainer width="100%" height={400}>
-                  <PieChart>
-                    <Pie
-                      data={getTreatData()}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={120}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {getTreatData().map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={Object.values(COLORS)[index % Object.values(COLORS).length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={300} className="sm:!h-[400px]">
+                    <PieChart>
+                      <Pie
+                        data={getTreatData()}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={window.innerWidth < 640 ? 80 : 120}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {getTreatData().map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={[
+                            '#E5B5D3', // brand-pink
+                            '#B8E5D5', // brand-mint  
+                            '#C5D5F7', // brand-blue
+                            '#F7E5B5', // brand-yellow
+                            '#F7D5E7'  // brand-pink-light
+                          ][index % 5]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ 
+                          background: 'white', 
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No treats tracked yet. It&apos;s okay to enjoy treats mindfully!
+                  <div className="w-16 h-16 bg-brand-yellow/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Cookie className="h-8 w-8 text-brand-yellow" />
+                  </div>
+                  <p className="text-sm">No treats tracked yet.</p>
+                  <p className="text-xs mt-1">It's okay to enjoy treats mindfully!</p>
                 </div>
               )}
             </CardContent>
