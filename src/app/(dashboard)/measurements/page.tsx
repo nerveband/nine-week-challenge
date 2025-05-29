@@ -14,6 +14,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2, Ruler, TrendingDown, Calendar, Camera, AlertCircle, Eye, Scale } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { getCurrentWeek, isMeasurementWeek, MEASUREMENT_WEEKS } from '@/lib/utils'
+import Image from 'next/image'
 
 interface MeasurementAverage {
   hip?: number
@@ -375,9 +376,11 @@ export default function MeasurementsPage() {
                 <div className="flex justify-center">
                   <div className="relative w-[250px] h-[500px] md:w-[300px] md:h-[600px]">
                     {/* Human body silhouette - referencing the SVG file */}
-                    <img 
+                    <Image 
                       src="/docs/human body.svg" 
                       alt="Body measurement guide" 
+                      width={300}
+                      height={600}
                       className="w-full h-full"
                       style={{ filter: 'brightness(1.3)' }}
                     />

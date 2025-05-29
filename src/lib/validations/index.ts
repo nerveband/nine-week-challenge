@@ -43,16 +43,21 @@ export const dailyTrackingSchema = z.object({
 
 export const mealSchema = z.object({
   meal_type: z.enum(['meal1', 'meal2', 'meal3', 'snack']),
+  ate_meal: z.boolean().default(true),
   meal_time: z.string().optional(),
+  distracted: z.boolean().optional(),
+  ate_slowly: z.boolean().optional(),
+  hunger_minutes: z.number().min(0).max(180).optional(),
   hunger_before: z.number().min(1).max(10).optional(),
   fullness_after: z.number().min(1).max(10).optional(),
   duration_minutes: z.number().min(1).max(180).optional(),
-  distracted: z.boolean().optional()
+  snack_reason: z.string().max(200).optional()
 })
 
 export const treatSchema = z.object({
   treat_type: z.string().min(1, 'Treat type is required'),
-  quantity: z.number().min(1).max(10).default(1)
+  quantity: z.number().min(1).max(10).default(1),
+  description: z.string().max(200).optional()
 })
 
 export type LoginInput = z.infer<typeof loginSchema>

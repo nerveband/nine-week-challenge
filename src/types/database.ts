@@ -125,33 +125,45 @@ export interface Database {
           id: string
           daily_tracking_id: string
           meal_type: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          ate_meal: boolean | null
           meal_time: string | null
+          distracted: boolean | null
+          ate_slowly: boolean | null
+          hunger_minutes: number | null
           hunger_before: number | null
           fullness_after: number | null
           duration_minutes: number | null
-          distracted: boolean | null
+          snack_reason: string | null
           created_at: string
         }
         Insert: {
           id?: string
           daily_tracking_id: string
           meal_type: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          ate_meal?: boolean | null
           meal_time?: string | null
+          distracted?: boolean | null
+          ate_slowly?: boolean | null
+          hunger_minutes?: number | null
           hunger_before?: number | null
           fullness_after?: number | null
           duration_minutes?: number | null
-          distracted?: boolean | null
+          snack_reason?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           daily_tracking_id?: string
           meal_type?: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          ate_meal?: boolean | null
           meal_time?: string | null
+          distracted?: boolean | null
+          ate_slowly?: boolean | null
+          hunger_minutes?: number | null
           hunger_before?: number | null
           fullness_after?: number | null
           duration_minutes?: number | null
-          distracted?: boolean | null
+          snack_reason?: string | null
           created_at?: string
         }
       }
@@ -161,6 +173,7 @@ export interface Database {
           daily_tracking_id: string
           treat_type: string
           quantity: number
+          description: string | null
           created_at: string
         }
         Insert: {
@@ -168,6 +181,7 @@ export interface Database {
           daily_tracking_id: string
           treat_type: string
           quantity?: number
+          description?: string | null
           created_at?: string
         }
         Update: {
@@ -175,6 +189,7 @@ export interface Database {
           daily_tracking_id?: string
           treat_type?: string
           quantity?: number
+          description?: string | null
           created_at?: string
         }
       }

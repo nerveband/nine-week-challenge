@@ -59,13 +59,58 @@ export const FULLNESS_SCALE = [
 ]
 
 export const TREAT_CATEGORIES = [
-  'Chocolate',
-  'Ice Cream',
-  'Cookies',
-  'Cake',
-  'Chips',
-  'Candy',
-  'Pastry',
-  'Soda',
+  'Sweets/Candy/Cake',
+  'Extra Breads',
+  'Alcohol',
+  'Fried Foods',
+  'Sugary Drinks',
+  'Snack Foods',
   'Other'
 ]
+
+export const WEEKLY_HABITS = {
+  '1-3': {
+    title: 'HABIT 1: 3-4 meals per day; no snacking in-between',
+    instructions: [
+      'Track whether you ate each meal (Y/N)',
+      'Note if you were distracted during meals',
+      'If you had a snack, explain why (hunger, boredom, emotion, stress)'
+    ],
+    goals: [
+      'Eat 3-4 meals per day',
+      'No snacking between meals',
+      'Focus on eating without distractions'
+    ]
+  },
+  '4-6': {
+    title: 'HABIT 2: Put your fork down between bites',
+    instructions: [
+      'Put your fork/food down after each bite',
+      "Don't pick it back up until you've swallowed",
+      'Track how long you were hungry before each meal',
+      'Note if you ate more slowly (Y/N)'
+    ],
+    goals: [
+      'Continue 3-4 meals per day',
+      'Eat more slowly and mindfully',
+      'Track hunger duration before meals'
+    ],
+    newInfo: {
+      title: 'What does hunger feel like?',
+      content: 'Physical sensations in your stomach, low energy, difficulty concentrating, irritability. True hunger builds gradually and any food will satisfy it.'
+    }
+  },
+  '7-9': {
+    title: 'HABIT 3: Stop eating at 80% full',
+    instructions: [
+      'Continue putting fork down between bites',
+      'Track fullness level after each meal (1-10)',
+      'Aim to stop eating at 7-8 on the fullness scale'
+    ],
+    goals: [
+      'Continue all previous habits',
+      'Stop eating when satisfied (80% full)',
+      'Track fullness after each meal'
+    ]
+  }
+}
