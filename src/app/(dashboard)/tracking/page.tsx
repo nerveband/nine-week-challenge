@@ -673,7 +673,7 @@ export default function TrackingPage() {
                 <div className="space-y-2">
                   <Label htmlFor="daily_win" className="text-sm flex items-center gap-2">
                     <Trophy className="h-4 w-4 text-brand-yellow" />
-                    Today's Win
+                    Today&apos;s Win
                   </Label>
                   <Input
                     id="daily_win"
@@ -710,7 +710,7 @@ export default function TrackingPage() {
             {/* Progress summary */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Today's Summary</CardTitle>
+                <CardTitle className="text-sm">Today&apos;s Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
@@ -766,7 +766,7 @@ export default function TrackingPage() {
             ) : (
               <>
                 <Save className="mr-2 h-5 w-5" />
-                Save Today's Tracking
+                Save Today&apos;s Tracking
               </>
             )}
           </Button>

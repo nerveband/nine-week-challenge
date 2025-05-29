@@ -162,7 +162,7 @@ export default async function DashboardPage() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Today's Progress</CardTitle>
+              <CardTitle className="text-lg">Today&apos;s Progress</CardTitle>
               <CardDescription className="text-xs mt-1">{weekPhase.description}</CardDescription>
             </div>
             {!todayTracking && (
@@ -232,7 +232,7 @@ export default async function DashboardPage() {
               </p>
               <Link href="/tracking">
                 <Button variant="brand" className="w-full max-w-xs">
-                  Start Today's Tracking
+                  Start Today&apos;s Tracking
                 </Button>
               </Link>
             </div>
@@ -306,7 +306,7 @@ export default async function DashboardPage() {
             <Award className="h-8 w-8 text-brand-pink mx-auto mb-2" />
             <p className="text-sm font-medium">
               {currentStreak >= 7 ? '🎉 Amazing work! ' : '💪 Great job! '}
-              You're on a {currentStreak} day streak!
+              You&apos;re on a {currentStreak} day streak!
             </p>
           </CardContent>
         </Card>

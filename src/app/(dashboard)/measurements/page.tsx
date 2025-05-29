@@ -349,7 +349,7 @@ export default function MeasurementsPage() {
                     <li>• <strong>Measure 3 times</strong> and take the average for consistency</li>
                     <li>• <strong>Use a cloth measuring tape</strong> (more accurate than metal)</li>
                     <li>• <strong>Measure in nude/minimal clothing</strong> first thing in the morning</li>
-                    <li>• <strong>Breathe normally</strong> - don't suck in for better numbers</li>
+                    <li>• <strong>Breathe normally</strong> - don&apos;t suck in for better numbers</li>
                     <li>• <strong>Use a mirror</strong> to ensure tape is straight and level</li>
                     <li>• <strong>Keep tape snug but not tight</strong> - it should lay flat without compressing</li>
                   </ul>

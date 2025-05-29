@@ -528,7 +528,7 @@ export default function ProgressPage() {
                     <Cookie className="h-8 w-8 text-brand-yellow" />
                   </div>
                   <p className="text-sm">No treats tracked yet.</p>
-                  <p className="text-xs mt-1">It's okay to enjoy treats mindfully!</p>
+                  <p className="text-xs mt-1">It&apos;s okay to enjoy treats mindfully!</p>
                 </div>
               )}
             </CardContent>

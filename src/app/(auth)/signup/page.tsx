@@ -269,7 +269,7 @@ export default function SignupPage() {
         
         {/* Benefits list */}
         <div className="space-y-2 pt-2">
-          <p className="text-xs text-gray-600 font-medium">You'll get:</p>
+          <p className="text-xs text-gray-600 font-medium">You&apos;ll get:</p>
           <ul className="space-y-1 text-xs text-gray-600">
             <li className="flex items-center">
               <CheckCircle2 className="h-3 w-3 mr-2 text-brand-mint" />
