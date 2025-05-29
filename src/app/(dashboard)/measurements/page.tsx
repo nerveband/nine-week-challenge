@@ -14,6 +14,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2, Ruler, TrendingDown, Calendar, Camera, AlertCircle, Eye, Scale } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { getCurrentWeek, isMeasurementWeek, MEASUREMENT_WEEKS } from '@/lib/utils'
+import { MeasurementsCalendar } from '@/components/measurements/measurements-calendar'
 import Image from 'next/image'
 
 interface MeasurementAverage {
@@ -53,10 +54,13 @@ export default function MeasurementsPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [currentWeek, setCurrentWeek] = useState(1)
+  const [selectedWeek, setSelectedWeek] = useState(1)
   const [canMeasure, setCanMeasure] = useState(false)
   const [previousMeasurements, setPreviousMeasurements] = useState<any[]>([])
   const [readings, setReadings] = useState<MeasurementReading>({})
   const [averages, setAverages] = useState<MeasurementAverage>({})
+  const [programStartDate, setProgramStartDate] = useState('')
+  const [showCalendar, setShowCalendar] = useState(false)
 
   const {
     register,
@@ -95,8 +99,10 @@ export default function MeasurementsPage() {
         .single()
 
       if (profile) {
+        setProgramStartDate(profile.program_start_date)
         const week = getCurrentWeek(profile.program_start_date)
         setCurrentWeek(week)
+        setSelectedWeek(week)
         setCanMeasure(isMeasurementWeek(week))
       }
 
@@ -267,13 +273,41 @@ export default function MeasurementsPage() {
 
   return (
     <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
-      {/* Mobile-optimized header */}
+      {/* Header with calendar toggle */}
       <div className="animate-fade-in">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Body Measurements</h1>
-        <p className="text-sm sm:text-base text-muted-foreground mt-1">
-          Week {currentWeek} • {canMeasure ? '📏 Measurement Week!' : `Next measurement in week ${MEASUREMENT_WEEKS.find(w => w > currentWeek) || 9}`}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Body Measurements</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
+              Week {selectedWeek} • {isMeasurementWeek(selectedWeek) ? '📏 Measurement Week!' : `Next measurement in week ${MEASUREMENT_WEEKS.find(w => w > selectedWeek) || 9}`}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowCalendar(!showCalendar)}
+            className="flex items-center gap-2"
+          >
+            <Calendar className="h-4 w-4" />
+            {showCalendar ? 'Hide' : 'Schedule'}
+          </Button>
+        </div>
       </div>
+
+      {/* Measurements Calendar */}
+      {showCalendar && programStartDate && (
+        <MeasurementsCalendar
+          programStartDate={programStartDate}
+          currentWeek={currentWeek}
+          selectedWeek={selectedWeek}
+          onWeekSelect={(week) => {
+            setSelectedWeek(week)
+            setCanMeasure(isMeasurementWeek(week))
+          }}
+          measurementData={previousMeasurements}
+          className="animate-fade-in"
+        />
+      )}
 
       {!canMeasure && (
         <Card className="border-brand-yellow bg-brand-yellow/10 animate-fade-in-delay">

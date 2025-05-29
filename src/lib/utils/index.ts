@@ -109,6 +109,12 @@ export function getWeekPhase(week: number) {
   return WEEK_PHASES.find(phase => phase.weeks.includes(week)) || WEEK_PHASES[0]
 }
 
+export function getDashboardWeekPhase(week: number) {
+  if (week <= 3) return { phase: 'Foundation', description: 'Building basic habits' }
+  if (week <= 6) return { phase: 'Awareness', description: 'Hunger & fullness focus' }
+  return { phase: 'Mastery', description: 'Mindful eating & satisfaction' }
+}
+
 export function isMeasurementWeek(week: number): boolean {
   return [1, 3, 5, 7, 9].includes(week)
 }
