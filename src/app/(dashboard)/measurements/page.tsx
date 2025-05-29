@@ -374,23 +374,37 @@ export default function MeasurementsPage() {
                 {/* Body Diagram */}
                 <div className="flex justify-center">
                   <div className="relative">
-                    {/* Simple body silhouette */}
+                    {/* Female body silhouette - anatomically correct */}
                     <svg width="200" height="400" viewBox="0 0 200 400" className="text-gray-300">
-                      {/* Body outline */}
-                      <path
-                        d="M100 40 C85 40 75 50 75 65 L75 85 C70 85 60 90 60 100 L60 140 C55 145 50 150 50 160 L50 240 C50 250 55 260 65 270 L65 350 C65 360 70 370 80 370 L85 370 L85 390 C85 395 90 400 95 400 L105 400 C110 400 115 395 115 390 L115 370 L120 370 C130 370 135 360 135 350 L135 270 C145 260 150 250 150 240 L150 160 C150 150 145 145 140 140 L140 100 C140 90 130 85 125 85 L125 65 C125 50 115 40 100 40 Z"
-                        fill="currentColor"
-                        stroke="#9CA3AF"
-                        strokeWidth="2"
-                      />
                       {/* Head */}
-                      <circle cx="100" cy="25" r="15" fill="currentColor" stroke="#9CA3AF" strokeWidth="2" />
+                      <ellipse cx="100" cy="35" rx="20" ry="25" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
+                      
+                      {/* Neck */}
+                      <rect x="92" y="58" width="16" height="18" fill="#E5E7EB" />
+                      
+                      {/* Shoulders and Upper Arms */}
+                      <path d="M 92 76 Q 85 76 75 78 L 60 82 L 55 88 L 50 95 L 48 110 L 48 125 L 50 140 L 55 155 L 58 165 L 62 170 L 65 172 M 108 76 Q 115 76 125 78 L 140 82 L 145 88 L 150 95 L 152 110 L 152 125 L 150 140 L 145 155 L 142 165 L 138 170 L 135 172" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
+                      
+                      {/* Upper body outline */}
+                      <path d="M 75 78 Q 85 76 92 76 L 108 76 Q 115 76 125 78 L 128 85 L 130 95 L 132 105 L 133 115 L 134 125 L 133 135 L 130 145 L 125 152 L 120 158 L 115 162 L 110 165 L 105 167 L 100 168 L 95 167 L 90 165 L 85 162 L 80 158 L 75 152 L 70 145 L 67 135 L 66 125 L 67 115 L 68 105 L 70 95 L 72 85 L 75 78 Z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
+                      
+                      {/* Waist */}
+                      <path d="M 80 158 Q 85 162 90 165 L 95 167 L 100 168 L 105 167 L 110 165 Q 115 162 120 158 L 118 175 L 115 185 L 110 190 L 100 192 L 90 190 L 85 185 L 82 175 L 80 158 Z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
+                      
+                      {/* Hips and Upper Thighs */}
+                      <path d="M 82 175 L 80 185 L 75 195 L 70 205 L 68 215 L 67 225 L 68 235 L 70 245 L 73 255 L 75 265 L 78 270 L 82 272 L 85 270 L 88 265 L 90 255 L 92 245 L 93 235 L 94 225 L 95 215 L 96 210 L 98 205 L 100 203 L 102 205 L 104 210 L 105 215 L 106 225 L 107 235 L 108 245 L 110 255 L 112 265 L 115 270 L 118 272 L 122 270 L 125 265 L 127 255 L 130 245 L 132 235 L 133 225 L 132 215 L 130 205 L 125 195 L 120 185 L 118 175" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
+                      
+                      {/* Left Leg */}
+                      <path d="M 78 270 L 77 280 L 76 300 L 75 320 L 74 340 L 73 360 L 72 375 L 72 380 L 80 385 L 88 385 L 96 380 L 96 375 L 95 360 L 94 340 L 93 320 L 92 300 L 91 280 L 90 270" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
+                      
+                      {/* Right Leg */}
+                      <path d="M 110 270 L 109 280 L 108 300 L 107 320 L 106 340 L 105 360 L 104 375 L 104 380 L 112 385 L 120 385 L 128 380 L 128 375 L 127 360 L 126 340 L 125 320 L 124 300 L 123 280 L 122 270" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="1.5" />
                     </svg>
                     
                     {/* Measurement lines with labels */}
                     <div className="absolute top-0 left-0 w-full h-full">
                       {/* Chest (bra line) */}
-                      <div className="absolute" style={{ top: '24%', left: '15%', right: '15%' }}>
+                      <div className="absolute" style={{ top: '35%', left: '33%', right: '33%' }}>
                         <div className="w-full h-0.5 bg-red-400 relative">
                           <div className="absolute -right-20 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-red-600 font-medium whitespace-nowrap">
                             Chest (bra line)
@@ -399,7 +413,7 @@ export default function MeasurementsPage() {
                       </div>
                       
                       {/* Chest 2 (fullest part) */}
-                      <div className="absolute" style={{ top: '28%', left: '12%', right: '12%' }}>
+                      <div className="absolute" style={{ top: '38%', left: '31%', right: '31%' }}>
                         <div className="w-full h-0.5 bg-pink-400 relative">
                           <div className="absolute -left-24 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-pink-600 font-medium whitespace-nowrap">
                             Chest 2 (fullest)
@@ -408,7 +422,7 @@ export default function MeasurementsPage() {
                       </div>
                       
                       {/* Waist (belly button) */}
-                      <div className="absolute" style={{ top: '40%', left: '20%', right: '20%' }}>
+                      <div className="absolute" style={{ top: '45%', left: '40%', right: '40%' }}>
                         <div className="w-full h-0.5 bg-blue-400 relative">
                           <div className="absolute -right-24 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-blue-600 font-medium whitespace-nowrap">
                             Waist (belly button)
@@ -417,7 +431,7 @@ export default function MeasurementsPage() {
                       </div>
                       
                       {/* Hip (biggest point) */}
-                      <div className="absolute" style={{ top: '52%', left: '12%', right: '12%' }}>
+                      <div className="absolute" style={{ top: '55%', left: '35%', right: '35%' }}>
                         <div className="w-full h-0.5 bg-green-400 relative">
                           <div className="absolute -left-20 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-green-600 font-medium whitespace-nowrap">
                             Hip (biggest point)
@@ -426,7 +440,7 @@ export default function MeasurementsPage() {
                       </div>
                       
                       {/* Thigh (right thigh) */}
-                      <div className="absolute" style={{ top: '62%', left: '55%', width: '20%' }}>
+                      <div className="absolute" style={{ top: '72%', left: '54%', width: '18%' }}>
                         <div className="w-full h-0.5 bg-purple-400 relative">
                           <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-purple-600 font-medium whitespace-nowrap">
                             Right Thigh
@@ -435,7 +449,7 @@ export default function MeasurementsPage() {
                       </div>
                       
                       {/* Bicep (right arm) */}
-                      <div className="absolute" style={{ top: '30%', left: '75%', width: '15%' }}>
+                      <div className="absolute" style={{ top: '30%', left: '67%', width: '20%' }}>
                         <div className="w-full h-0.5 bg-orange-400 relative">
                           <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-orange-600 font-medium whitespace-nowrap">
                             Right Bicep
