@@ -36,7 +36,73 @@ export function getCurrentWeek(startDate: string | Date): number {
   const diffTime = Math.abs(today.getTime() - start.getTime())
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   const week = Math.ceil(diffDays / 7)
-  return Math.min(week, 9) // Cap at week 9
+  return week // Allow tracking beyond week 9
+}
+
+export function getWeekForDate(startDate: string | Date, targetDate: string | Date): number {
+  const start = new Date(startDate)
+  const target = new Date(targetDate)
+  const diffTime = Math.abs(target.getTime() - start.getTime())
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  const week = Math.ceil(diffDays / 7)
+  return week
+}
+
+export function getWeekDateRange(startDate: string | Date, week: number): { start: Date; end: Date } {
+  const programStart = new Date(startDate)
+  const weekStart = new Date(programStart)
+  weekStart.setDate(programStart.getDate() + (week - 1) * 7)
+  
+  const weekEnd = new Date(weekStart)
+  weekEnd.setDate(weekStart.getDate() + 6)
+  
+  return { start: weekStart, end: weekEnd }
+}
+
+export function getDatesInWeek(startDate: string | Date, week: number): Date[] {
+  const { start } = getWeekDateRange(startDate, week)
+  const dates = []
+  
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(start)
+    date.setDate(start.getDate() + i)
+    dates.push(date)
+  }
+  
+  return dates
+}
+
+export function formatWeekRange(startDate: string | Date, week: number): string {
+  const { start, end } = getWeekDateRange(startDate, week)
+  
+  const startMonth = start.toLocaleDateString('en-US', { month: 'short' })
+  const endMonth = end.toLocaleDateString('en-US', { month: 'short' })
+  
+  if (startMonth === endMonth) {
+    return `${startMonth} ${start.getDate()}-${end.getDate()}`
+  } else {
+    return `${startMonth} ${start.getDate()} - ${endMonth} ${end.getDate()}`
+  }
+}
+
+export function formatDateShort(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+export function isToday(date: Date): boolean {
+  const today = new Date()
+  return date.toDateString() === today.toDateString()
+}
+
+export function isWithinProgramRange(startDate: string | Date, targetDate: Date): boolean {
+  const start = new Date(startDate)
+  const maxEndDate = new Date(start)
+  maxEndDate.setDate(start.getDate() + (9 * 7) - 1) // 9 weeks from start
+  
+  return targetDate >= start && targetDate <= maxEndDate
 }
 
 export function getWeekPhase(week: number) {

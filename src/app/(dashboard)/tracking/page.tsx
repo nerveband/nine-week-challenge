@@ -13,11 +13,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import { FullnessScaleReference } from '@/components/forms/fullness-scale-reference'
+import { WeekCalendar } from '@/components/tracking/week-calendar'
+import { TrackingActions } from '@/components/tracking/tracking-actions'
 import { dailyTrackingSchema, mealSchema, treatSchema, type DailyTrackingInput, type MealInput, type TreatInput } from '@/lib/validations'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Loader2, Moon, Droplets, Footprints, Trophy, Clock, Utensils, Cookie, Plus, X, Save, ChevronDown, ChevronUp, CheckCircle2, Info, AlertCircle } from 'lucide-react'
+import { Loader2, Moon, Droplets, Footprints, Trophy, Clock, Utensils, Cookie, Plus, X, Save, ChevronDown, ChevronUp, CheckCircle2, Info, AlertCircle, Calendar } from 'lucide-react'
 import type { Database } from '@/types/database'
-import { getCurrentWeek, getWeekPhase } from '@/lib/utils'
+import { getCurrentWeek, getWeekPhase, getWeekForDate, formatDateShort, isToday } from '@/lib/utils'
 import { TREAT_CATEGORIES, WEEKLY_HABITS, type MealType } from '@/types'
 
 interface ExtendedDailyTrackingInput extends DailyTrackingInput {
@@ -45,6 +47,10 @@ export default function TrackingPage() {
   })
   const [showFullnessReference, setShowFullnessReference] = useState(false)
   const [hadTreat, setHadTreat] = useState(false)
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [programStartDate, setProgramStartDate] = useState('')
+  const [allTrackingData, setAllTrackingData] = useState<any[]>([])
+  const [showCalendar, setShowCalendar] = useState(false)
 
   const {
     register,
@@ -82,6 +88,13 @@ export default function TrackingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (programStartDate) {
+      loadTrackingForDate(selectedDate)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, programStartDate])
+
   const loadUserDataAndTracking = async () => {
     setIsLoading(true)
     try {
@@ -99,19 +112,42 @@ export default function TrackingPage() {
         .single()
 
       if (profile) {
+        setProgramStartDate(profile.program_start_date)
         const week = getCurrentWeek(profile.program_start_date)
         setCurrentWeek(week)
         const phase = getWeekPhase(week)
         setWeekPhase(phase.phase)
       }
 
-      // Get today's tracking
-      const today = new Date().toISOString().split('T')[0]
+      // Get all tracking data for calendar
+      const { data: allTracking } = await supabase
+        .from('daily_tracking')
+        .select('date')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false })
+
+      if (allTracking) {
+        setAllTrackingData(allTracking)
+      }
+
+    } catch (error) {
+      console.error('Error loading data:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const loadTrackingForDate = async (date: Date) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const dateStr = date.toISOString().split('T')[0]
       const { data: tracking } = await supabase
         .from('daily_tracking')
         .select('*, meals(*), treats(*)')
         .eq('user_id', user.id)
-        .eq('date', today)
+        .eq('date', dateStr)
         .single()
 
       if (tracking) {
@@ -127,11 +163,31 @@ export default function TrackingPage() {
           daily_win: tracking.daily_win || '',
           notes: tracking.notes || '',
         })
+      } else {
+        // Clear form for new date
+        setTrackingId(null)
+        setExistingMeals([])
+        setExistingTreats([])
+        setHadTreat(false)
+        
+        reset({
+          hours_sleep: 8,
+          ounces_water: 64,
+          steps: 5000,
+          daily_win: '',
+          notes: '',
+        })
+      }
+
+      // Update current week based on selected date
+      if (programStartDate) {
+        const week = getWeekForDate(programStartDate, date)
+        setCurrentWeek(week)
+        const phase = getWeekPhase(week)
+        setWeekPhase(phase.phase)
       }
     } catch (error) {
-      console.error('Error loading data:', error)
-    } finally {
-      setIsLoading(false)
+      console.error('Error loading tracking for date:', error)
     }
   }
 
@@ -144,7 +200,7 @@ export default function TrackingPage() {
         return
       }
 
-      const today = new Date().toISOString().split('T')[0]
+      const dateStr = selectedDate.toISOString().split('T')[0]
       let currentTrackingId = trackingId
       
       // Save or update daily tracking
@@ -167,7 +223,7 @@ export default function TrackingPage() {
           .from('daily_tracking')
           .insert({
             user_id: user.id,
-            date: today,
+            date: dateStr,
             hours_sleep: data.hours_sleep,
             ounces_water: data.ounces_water,
             steps: data.steps,
@@ -247,6 +303,7 @@ export default function TrackingPage() {
       
       // Reload data
       await loadUserDataAndTracking()
+      await loadTrackingForDate(selectedDate)
     } catch (error) {
       console.error('Error saving:', error)
       toast({
@@ -267,6 +324,29 @@ export default function TrackingPage() {
     if (currentWeek <= 3) return '1-3'
     if (currentWeek <= 6) return '4-6'
     return '7-9'
+  }
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date)
+  }
+
+  const handleWeekChange = (week: number) => {
+    // Navigate to the first day of the selected week
+    if (programStartDate) {
+      const { getWeekDateRange } = require('@/lib/utils')
+      const { start } = getWeekDateRange(programStartDate, week)
+      setSelectedDate(start)
+    }
+  }
+
+  const handleDeleteTracking = async () => {
+    await loadUserDataAndTracking()
+    await loadTrackingForDate(selectedDate)
+  }
+
+  const handleProgramRestart = async () => {
+    await loadUserDataAndTracking()
+    setSelectedDate(new Date()) // Reset to today
   }
 
   const addOrUpdateMeal = (mealType: MealType) => {
@@ -300,21 +380,55 @@ export default function TrackingPage() {
 
   return (
     <div className="space-y-4 pb-20 md:pb-0">
-      {/* Header with tracking status */}
+      {/* Header with date and calendar toggle */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Daily Tracking</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Week {currentWeek} of 9
-          </p>
-        </div>
-        {trackingId && (
-          <div className="flex items-center gap-1 text-xs sm:text-sm text-green-600 bg-green-50 px-2 py-1 rounded-full">
-            <CheckCircle2 className="h-3 w-3" />
-            <span>Saved</span>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-sm text-muted-foreground">
+              {isToday(selectedDate) ? 'Today' : formatDateShort(selectedDate)} • Week {currentWeek}
+              {currentWeek > 9 && ' (Extended)'}
+            </p>
+            {trackingId && (
+              <div className="flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                <CheckCircle2 className="h-3 w-3" />
+                <span>Saved</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowCalendar(!showCalendar)}
+            className="flex items-center gap-2"
+          >
+            <Calendar className="h-4 w-4" />
+            {showCalendar ? 'Hide' : 'Calendar'}
+          </Button>
+          <TrackingActions
+            trackingId={trackingId}
+            selectedDate={selectedDate}
+            onDeleted={handleDeleteTracking}
+            onProgramRestart={handleProgramRestart}
+            showRestartOption={currentWeek > 9}
+          />
+        </div>
       </div>
+
+      {/* Calendar view */}
+      {showCalendar && programStartDate && (
+        <WeekCalendar
+          programStartDate={programStartDate}
+          currentWeek={currentWeek}
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+          onWeekChange={handleWeekChange}
+          onRestartProgram={handleProgramRestart}
+          trackingData={allTrackingData}
+        />
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
         {/* Weekly Habit Card */}
