@@ -8,11 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/use-toast'
 import { measurementSchema, type MeasurementInput } from '@/lib/validations'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Loader2, Ruler, TrendingDown, Calendar, Camera } from 'lucide-react'
+import { Loader2, Ruler, TrendingDown, Calendar, Camera, AlertCircle, Eye, Scale } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { getCurrentWeek, isMeasurementWeek, MEASUREMENT_WEEKS } from '@/lib/utils'
 
@@ -328,79 +327,184 @@ export default function MeasurementsPage() {
 
       {canMeasure && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 animate-fade-in-delay-2">
+          {/* Measurement Instructions */}
+          <Card className="border-brand-blue bg-brand-blue/5">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-brand-blue" />
+                Measurement Instructions
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Follow these guidelines for accurate and consistent measurements
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-3 sm:gap-4">
+                <div className="bg-white rounded-lg p-3 border">
+                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <Scale className="h-4 w-4 text-brand-blue" />
+                    Key Points
+                  </h4>
+                  <ul className="text-xs sm:text-sm space-y-1 text-muted-foreground">
+                    <li>• <strong>Measure 3 times</strong> and take the average for consistency</li>
+                    <li>• <strong>Use a cloth measuring tape</strong> (more accurate than metal)</li>
+                    <li>• <strong>Measure in nude/minimal clothing</strong> first thing in the morning</li>
+                    <li>• <strong>Breathe normally</strong> - don't suck in for better numbers</li>
+                    <li>• <strong>Use a mirror</strong> to ensure tape is straight and level</li>
+                    <li>• <strong>Keep tape snug but not tight</strong> - it should lay flat without compressing</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Body Diagram with Measurements */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Take Measurements</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Eye className="h-5 w-5 text-brand-pink" />
+                Body Measurement Guide
+              </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
-                Take 3 measurements for each body part and we&apos;ll calculate the average
+                Visual guide showing where to place the measuring tape
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="hip" className="space-y-4">
-                {/* Mobile scrollable tabs */}
-                <div className="-mx-4 px-4 overflow-x-auto">
-                  <TabsList className="grid w-max grid-cols-6 gap-1 min-w-full">
-                    <TabsTrigger value="hip" className="text-xs">Hip</TabsTrigger>
-                    <TabsTrigger value="waist" className="text-xs">Waist</TabsTrigger>
-                    <TabsTrigger value="chest" className="text-xs">Chest</TabsTrigger>
-                    <TabsTrigger value="chest_2" className="text-xs">Chest 2</TabsTrigger>
-                    <TabsTrigger value="thigh" className="text-xs">Thigh</TabsTrigger>
-                    <TabsTrigger value="bicep" className="text-xs">Bicep</TabsTrigger>
-                  </TabsList>
-                </div>
-
-                {(['hip', 'waist', 'chest', 'chest_2', 'thigh', 'bicep'] as const).map(measurement => (
-                  <TabsContent key={measurement} value={measurement} className="space-y-4">
-                    <div className="bg-brand-pink/5 rounded-lg p-4">
-                      <h3 className="text-base sm:text-lg font-semibold capitalize mb-1">
-                        {measurement === 'chest_2' ? 'Chest 2 (Under Breast)' : measurement} Measurements
-                      </h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground">
-                        Take 3 measurements and we&apos;ll calculate the average
-                      </p>
-                    </div>
-
-                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
-                      {[1, 2, 3].map(num => (
-                        <div key={num} className="space-y-2">
-                          <Label htmlFor={`${measurement}${num}`} className="text-sm font-medium">
-                            Reading {num}
-                          </Label>
-                          <Input
-                            id={`${measurement}${num}`}
-                            type="number"
-                            inputMode="decimal"
-                            step="0.1"
-                            min="0"
-                            max="100"
-                            placeholder="0.0"
-                            className="h-12 text-base"
-                            onChange={(e) => updateReading(measurement, num, e.target.value)}
-                          />
+              <div className="grid lg:grid-cols-2 gap-6">
+                {/* Body Diagram */}
+                <div className="flex justify-center">
+                  <div className="relative">
+                    {/* Simple body silhouette */}
+                    <svg width="200" height="400" viewBox="0 0 200 400" className="text-gray-300">
+                      {/* Body outline */}
+                      <path
+                        d="M100 40 C85 40 75 50 75 65 L75 85 C70 85 60 90 60 100 L60 140 C55 145 50 150 50 160 L50 240 C50 250 55 260 65 270 L65 350 C65 360 70 370 80 370 L85 370 L85 390 C85 395 90 400 95 400 L105 400 C110 400 115 395 115 390 L115 370 L120 370 C130 370 135 360 135 350 L135 270 C145 260 150 250 150 240 L150 160 C150 150 145 145 140 140 L140 100 C140 90 130 85 125 85 L125 65 C125 50 115 40 100 40 Z"
+                        fill="currentColor"
+                        stroke="#9CA3AF"
+                        strokeWidth="2"
+                      />
+                      {/* Head */}
+                      <circle cx="100" cy="25" r="15" fill="currentColor" stroke="#9CA3AF" strokeWidth="2" />
+                    </svg>
+                    
+                    {/* Measurement lines with labels */}
+                    <div className="absolute top-0 left-0 w-full h-full">
+                      {/* Chest (bra line) */}
+                      <div className="absolute" style={{ top: '24%', left: '15%', right: '15%' }}>
+                        <div className="w-full h-0.5 bg-red-400 relative">
+                          <div className="absolute -right-20 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-red-600 font-medium whitespace-nowrap">
+                            Chest (bra line)
+                          </div>
                         </div>
-                      ))}
-                    </div>
-
-                    <div className="bg-gradient-to-r from-brand-mint/10 to-brand-blue/10 p-4 rounded-lg border border-brand-mint/20">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium flex items-center gap-2">
-                          <Ruler className="h-4 w-4 text-brand-mint" />
-                          Average:
-                        </span>
-                        <span className="text-xl sm:text-2xl font-bold text-brand-mint">
-                          {averages[measurement] ? `${averages[measurement]}"` : '—'}
-                        </span>
+                      </div>
+                      
+                      {/* Chest 2 (fullest part) */}
+                      <div className="absolute" style={{ top: '28%', left: '12%', right: '12%' }}>
+                        <div className="w-full h-0.5 bg-pink-400 relative">
+                          <div className="absolute -left-24 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-pink-600 font-medium whitespace-nowrap">
+                            Chest 2 (fullest)
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Waist (belly button) */}
+                      <div className="absolute" style={{ top: '40%', left: '20%', right: '20%' }}>
+                        <div className="w-full h-0.5 bg-blue-400 relative">
+                          <div className="absolute -right-24 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-blue-600 font-medium whitespace-nowrap">
+                            Waist (belly button)
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Hip (biggest point) */}
+                      <div className="absolute" style={{ top: '52%', left: '12%', right: '12%' }}>
+                        <div className="w-full h-0.5 bg-green-400 relative">
+                          <div className="absolute -left-20 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-green-600 font-medium whitespace-nowrap">
+                            Hip (biggest point)
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Thigh (right thigh) */}
+                      <div className="absolute" style={{ top: '62%', left: '55%', width: '20%' }}>
+                        <div className="w-full h-0.5 bg-purple-400 relative">
+                          <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-purple-600 font-medium whitespace-nowrap">
+                            Right Thigh
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Bicep (right arm) */}
+                      <div className="absolute" style={{ top: '30%', left: '75%', width: '15%' }}>
+                        <div className="w-full h-0.5 bg-orange-400 relative">
+                          <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-xs bg-white px-2 py-1 rounded border text-orange-600 font-medium whitespace-nowrap">
+                            Right Bicep
+                          </div>
+                        </div>
                       </div>
                     </div>
-
-                    <input
-                      type="hidden"
-                      {...register(measurement, { valueAsNumber: true })}
-                      value={averages[measurement] || ''}
-                    />
-                  </TabsContent>
-                ))}
-              </Tabs>
+                  </div>
+                </div>
+                
+                {/* Measurement Form */}
+                <div className="space-y-4">
+                  {[
+                    { key: 'hip', label: 'Hip', description: 'Biggest point around butt', color: 'green' },
+                    { key: 'waist', label: 'Waist', description: 'At belly button level', color: 'blue' },
+                    { key: 'chest', label: 'Chest', description: 'At bra line level', color: 'red' },
+                    { key: 'chest_2', label: 'Chest 2', description: 'Fullest part/nipple line', color: 'pink' },
+                    { key: 'thigh', label: 'Right Thigh', description: 'Fullest part of right thigh', color: 'purple' },
+                    { key: 'bicep', label: 'Right Bicep', description: 'Biggest part of right bicep', color: 'orange' }
+                  ].map(({ key, label, description, color }) => (
+                    <div key={key} className={`border-l-4 border-${color}-400 bg-${color}-50 p-4 rounded-r-lg`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-sm">{label}</h3>
+                          <p className="text-xs text-muted-foreground">{description}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold">
+                            {averages[key as keyof MeasurementAverage] ? `${averages[key as keyof MeasurementAverage]}"` : '—'}
+                          </div>
+                          <div className="text-xs text-muted-foreground">inches</div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-2">
+                        {[1, 2, 3].map(num => (
+                          <div key={num}>
+                            <Label htmlFor={`${key}${num}`} className="text-xs">
+                              #{num}
+                            </Label>
+                            <div className="relative">
+                              <Input
+                                id={`${key}${num}`}
+                                type="number"
+                                inputMode="decimal"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                                placeholder="0.0"
+                                className="h-10 text-sm pr-8"
+                                onChange={(e) => updateReading(key, num, e.target.value)}
+                              />
+                              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                                in
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <input
+                        type="hidden"
+                        {...register(key as keyof MeasurementInput, { valueAsNumber: true })}
+                        value={averages[key as keyof MeasurementAverage] || ''}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </CardContent>
           </Card>
 
