@@ -143,6 +143,7 @@ export interface Database {
           id: string
           daily_tracking_id: string
           meal_type: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          meal_name: string | null
           ate_meal: boolean | null
           meal_time: string | null
           distracted: boolean | null
@@ -159,6 +160,7 @@ export interface Database {
           id?: string
           daily_tracking_id: string
           meal_type: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          meal_name?: string | null
           ate_meal?: boolean | null
           meal_time?: string | null
           distracted?: boolean | null
@@ -175,6 +177,7 @@ export interface Database {
           id?: string
           daily_tracking_id?: string
           meal_type?: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          meal_name?: string | null
           ate_meal?: boolean | null
           meal_time?: string | null
           distracted?: boolean | null

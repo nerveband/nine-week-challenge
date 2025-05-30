@@ -250,6 +250,7 @@ export default function TrackingPage() {
               .from('meals')
               .update({
                 ate_meal: meal.ate_meal,
+                meal_name: meal.meal_name,
                 meal_time: meal.meal_time,
                 distracted: meal.distracted,
                 ate_slowly: meal.ate_slowly,
@@ -353,8 +354,14 @@ export default function TrackingPage() {
   const addOrUpdateMeal = (mealType: MealType) => {
     const existingIndex = mealFields.findIndex(f => f.meal_type === mealType)
     if (existingIndex === -1) {
+      const defaultMealName = mealType === 'meal1' ? 'Breakfast' :
+                               mealType === 'meal2' ? 'Lunch' :
+                               mealType === 'meal3' ? 'Dinner' :
+                               'Snack'
+      
       appendMeal({ 
         meal_type: mealType,
+        meal_name: defaultMealName,
         ate_meal: true,
         meal_time: '',
         distracted: false,
@@ -636,11 +643,23 @@ export default function TrackingPage() {
                 return (
                   <div key={mealType} className="border rounded-lg p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold">
-                        {isSnack ? 'Snack' : `Meal ${mealType.slice(-1)}`}
-                      </h3>
+                      <div className="flex-1">
+                        {hasMeal ? (
+                          <Input
+                            type="text"
+                            placeholder={isSnack ? 'Snack' : `Meal ${mealType.slice(-1)}`}
+                            defaultValue={existingMeal?.meal_name || (isSnack ? 'Snack' : `Meal ${mealType.slice(-1)}`)}
+                            className="font-semibold border-none bg-transparent p-0 h-auto focus:bg-gray-50 focus:border focus:p-2 focus:h-8"
+                            {...(mealIndex !== -1 && register(`meals.${mealIndex}.meal_name`))}
+                          />
+                        ) : (
+                          <h3 className="font-semibold">
+                            {isSnack ? 'Snack' : `Meal ${mealType.slice(-1)}`}
+                          </h3>
+                        )}
+                      </div>
                       {hasMeal && (
-                        <CheckCircle2 className="h-4 w-4 text-brand-mint" />
+                        <CheckCircle2 className="h-4 w-4 text-brand-mint ml-2" />
                       )}
                     </div>
 

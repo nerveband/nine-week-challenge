@@ -225,3 +225,6 @@ Use for E2E testing:
 - Mobile responsiveness
 
 Note: MCP servers are development tools only - not needed for production deployment.
+
+
+After every implementation, always push to git. This will trigger Vercel to deploy the latest version of the app.

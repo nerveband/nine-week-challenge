@@ -43,6 +43,7 @@ export const dailyTrackingSchema = z.object({
 
 export const mealSchema = z.object({
   meal_type: z.enum(['meal1', 'meal2', 'meal3', 'snack']),
+  meal_name: z.string().max(100).optional(),
   ate_meal: z.boolean().default(true),
   meal_time: z.string().optional(),
   distracted: z.boolean().optional(),
