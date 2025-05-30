@@ -32,6 +32,7 @@ const navigation = [
   { name: 'Progress', href: '/progress', icon: BarChart3 },
   { name: 'Guide', href: '/guide', icon: HelpCircle },
   { name: 'Profile', href: '/profile', icon: User },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export default function DashboardLayout({
@@ -231,7 +232,14 @@ export default function DashboardLayout({
             })}
           </nav>
           
-          <div className="border-t border-gray-200 p-4">
+          <div className="border-t border-gray-200 p-4 space-y-2">
+            <Link
+              href="/settings"
+              className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors-smooth hover-lift"
+            >
+              <Settings className="mr-3 h-5 w-5" />
+              Settings
+            </Link>
             <button
               className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors-smooth hover-lift"
               onClick={handleSignOut}
