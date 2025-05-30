@@ -78,7 +78,7 @@
 
   /* Focus visible for accessibility */
   *:focus-visible {
-    outline: 2px solid theme('colors.brand.pink');
+    outline: 2px solid theme('colors.brand.orange');
     outline-offset: 2px;
   }
 
@@ -174,12 +174,42 @@
 
   /* Subtle glow effect */
   .glow-brand {
-    box-shadow: 0 0 0 1px theme('colors.brand.pink'), 0 0 20px theme('colors.brand.pink / 10%');
+    box-shadow: 0 0 0 1px theme('colors.brand.orange'), 0 0 20px theme('colors.brand.orange / 10%');
   }
 
   /* Smooth color transitions */
   .transition-colors-smooth {
     transition: color 0.3s ease-out, background-color 0.3s ease-out, border-color 0.3s ease-out;
+  }
+
+  /* Brand button variants */
+  .btn-brand {
+    background: linear-gradient(135deg, theme('colors.brand.orange') 0%, theme('colors.brand.orange-light') 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+    transition: all 0.2s ease-out;
+    box-shadow: 0 2px 8px theme('colors.brand.orange / 20%');
+  }
+
+  .btn-brand:hover {
+    background: linear-gradient(135deg, theme('colors.brand.orange-light') 0%, theme('colors.brand.orange') 100%);
+    box-shadow: 0 4px 12px theme('colors.brand.orange / 30%');
+    transform: translateY(-1px);
+  }
+
+  .btn-brand:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px theme('colors.brand.orange / 20%');
+  }
+
+  /* Orange gradient backgrounds */
+  .bg-gradient-orange {
+    background: linear-gradient(135deg, theme('colors.brand.orange') 0%, theme('colors.brand.orange-light') 100%);
+  }
+
+  .bg-gradient-orange-soft {
+    background: linear-gradient(135deg, theme('colors.brand.orange-glow / 10%') 0%, theme('colors.brand.orange-light / 10%') 100%);
   }
 }
 
@@ -187,7 +217,7 @@
 @layer components {
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: theme('colors.brand.pink') transparent;
+    scrollbar-color: theme('colors.brand.orange') transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -200,7 +230,7 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: theme('colors.brand.pink');
+    background-color: theme('colors.brand.orange');
     border-radius: 3px;
   }
 

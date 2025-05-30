@@ -15,7 +15,7 @@ export default function GuidePage() {
       title: 'Eat Slowly and Mindfully',
       description: 'Focus on savoring your food, reducing distractions, and paying attention to hunger and fullness cues.',
       icon: Clock,
-      color: 'brand-pink'
+      color: 'brand-orange'
     },
     {
       title: 'Eat Enough Protein',
@@ -27,7 +27,7 @@ export default function GuidePage() {
       title: 'Eat Enough Vegetables',
       description: 'Fill at least half your plate with non-starchy vegetables for fiber, nutrients, and volume.',
       icon: Salad,
-      color: 'brand-mint'
+      color: 'brand-green'
     },
     {
       title: 'Hydrate Consistently',
@@ -39,7 +39,7 @@ export default function GuidePage() {
       title: 'Move Your Body Regularly',
       description: 'Incorporate consistent physical activity into your daily routine, finding movement you enjoy.',
       icon: Dumbbell,
-      color: 'brand-mint'
+      color: 'brand-green'
     },
     {
       title: 'Prioritize Sleep',
@@ -57,19 +57,19 @@ export default function GuidePage() {
       title: 'Plan and Prepare Meals',
       description: 'Proactively think about and prepare your meals and snacks to make healthy choices easier and more consistent.',
       icon: Target,
-      color: 'brand-pink'
+      color: 'brand-orange'
     },
     {
       title: 'Master Your Environment',
       description: 'Arrange your home and workspace to support your healthy habits, making healthy choices convenient and unhealthy ones less so.',
       icon: Home,
-      color: 'brand-mint'
+      color: 'brand-green'
     },
     {
       title: 'Practice Self-Compassion',
       description: 'Treat yourself with kindness and understanding, especially when facing challenges or setbacks, rather than criticism.',
       icon: Heart,
-      color: 'brand-pink'
+      color: 'brand-orange'
     },
     {
       title: 'Understand Your Body\'s Cues',
@@ -90,7 +90,7 @@ export default function GuidePage() {
       weeks: '1-3',
       title: 'Foundation Phase',
       icon: Target,
-      color: 'brand-pink',
+      color: 'brand-orange',
       description: 'Building basic healthy habits',
       goals: [
         'Drink 8+ glasses (64+ oz) of water daily',
@@ -134,7 +134,7 @@ export default function GuidePage() {
       weeks: '7-9',
       title: 'Satisfaction Phase',
       icon: Heart,
-      color: 'brand-mint',
+      color: 'brand-green',
       description: 'Mastering mindful eating',
       goals: [
         'Continue all previous goals',
@@ -234,10 +234,10 @@ export default function GuidePage() {
       </div>
 
       {/* Quick Start */}
-      <Card className="border-brand-pink bg-gradient-to-br from-brand-pink/5 to-brand-mint/5 animate-fade-in-delay">
+      <Card className="border-brand-orange bg-gradient-to-br from-brand-orange/5 to-brand-green/5 animate-fade-in-delay">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <HelpCircle className="h-5 w-5 text-brand-pink" />
+            <HelpCircle className="h-5 w-5 text-brand-orange" />
             Quick Start
           </CardTitle>
         </CardHeader>
@@ -245,19 +245,19 @@ export default function GuidePage() {
           <p className="text-sm">Welcome to your transformation journey! Here&apos;s what to do:</p>
           <div className="space-y-2">
             <div className="flex items-start gap-2">
-              <span className="text-brand-pink font-bold">1.</span>
+              <span className="text-brand-orange font-bold">1.</span>
               <span className="text-sm">Track your daily habits (water, sleep, steps) every day</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-brand-pink font-bold">2.</span>
+              <span className="text-brand-orange font-bold">2.</span>
               <span className="text-sm">Take body measurements on weeks 1, 3, 5, 7, and 9</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-brand-pink font-bold">3.</span>
+              <span className="text-brand-orange font-bold">3.</span>
               <span className="text-sm">Follow the phase-specific goals for your current week</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-brand-pink font-bold">4.</span>
+              <span className="text-brand-orange font-bold">4.</span>
               <span className="text-sm">Celebrate daily wins - no victory is too small!</span>
             </div>
           </div>
@@ -361,7 +361,7 @@ export default function GuidePage() {
                       <ul className="space-y-1">
                         {phase.tips.map((tip, i) => (
                           <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
-                            <span className="text-brand-mint mt-0.5">✓</span>
+                            <span className="text-brand-green mt-0.5">✓</span>
                             <span>{tip}</span>
                           </li>
                         ))}
@@ -400,7 +400,7 @@ export default function GuidePage() {
                       <ul className="space-y-1">
                         {week.goals.map((goal, i) => (
                           <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                            <span className="text-brand-pink mt-0.5">•</span>
+                            <span className="text-brand-orange mt-0.5">•</span>
                             <span>{goal}</span>
                           </li>
                         ))}
@@ -446,8 +446,8 @@ export default function GuidePage() {
               return (
                 <div key={index} className="flex gap-3">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-pink/10 to-brand-mint/10 flex items-center justify-center">
-                      <Icon className="h-5 w-5 text-brand-pink" />
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-orange/10 to-brand-green/10 flex items-center justify-center">
+                      <Icon className="h-5 w-5 text-brand-orange" />
                     </div>
                   </div>
                   <div>
@@ -498,7 +498,7 @@ export default function GuidePage() {
       </Card>
 
       {/* CTA */}
-      <Card className="bg-gradient-to-r from-brand-pink/10 to-brand-mint/10 border-0">
+      <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10 border-0">
         <CardContent className="pt-6">
           <div className="text-center space-y-3">
             <h3 className="text-lg font-semibold">Ready to Transform Your Relationship with Food?</h3>

@@ -379,7 +379,7 @@ export default function TrackingPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-brand-pink" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-orange" />
       </div>
     )
   }
@@ -441,12 +441,12 @@ export default function TrackingPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
         {/* Weekly Habit Card */}
-        <Card className="border-brand-pink bg-brand-pink/5">
+        <Card className="border-brand-orange bg-brand-orange/5">
           <CardHeader className="cursor-pointer" onClick={() => toggleSection('habits')}>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-brand-pink" />
+                  <AlertCircle className="h-5 w-5 text-brand-orange" />
                   This Week&apos;s Focus
                 </CardTitle>
                 <CardDescription className="text-sm mt-1">{habitInfo.title}</CardDescription>
@@ -461,7 +461,7 @@ export default function TrackingPage() {
                 <ul className="space-y-1">
                   {habitInfo.goals.map((goal, index) => (
                     <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                      <span className="text-brand-pink mt-0.5">•</span>
+                      <span className="text-brand-orange mt-0.5">•</span>
                       <span>{goal}</span>
                     </li>
                   ))}
@@ -560,7 +560,7 @@ export default function TrackingPage() {
               <div className="space-y-3">
                 <Label className="flex items-center justify-between">
                   <span className="flex items-center gap-2">
-                    <Footprints className="h-4 w-4 text-brand-mint" />
+                    <Footprints className="h-4 w-4 text-brand-green" />
                     Steps
                   </span>
                   <span className="text-xl font-bold">{(watch('steps') || 5000).toLocaleString()}</span>
@@ -659,7 +659,7 @@ export default function TrackingPage() {
                         )}
                       </div>
                       {hasMeal && (
-                        <CheckCircle2 className="h-4 w-4 text-brand-mint ml-2" />
+                        <CheckCircle2 className="h-4 w-4 text-brand-green ml-2" />
                       )}
                     </div>
 
@@ -846,7 +846,7 @@ export default function TrackingPage() {
                                     <Info className="h-4 w-4" />
                                   </button>
                                 </span>
-                                <span className="text-lg font-bold text-brand-mint">
+                                <span className="text-lg font-bold text-brand-green">
                                   {watch(`meals.${mealIndex}.fullness_after`) || existingMeal?.fullness_after || 7}
                                 </span>
                               </Label>
@@ -1015,7 +1015,7 @@ export default function TrackingPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="daily_win" className="text-sm flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-brand-yellow" />
+                  <Trophy className="h-4 w-4 text-brand-orange" />
                   Today&apos;s Win
                   <button
                     type="button"

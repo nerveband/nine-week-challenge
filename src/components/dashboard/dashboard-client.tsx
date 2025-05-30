@@ -71,7 +71,7 @@ export function DashboardClient({
       title: 'Eat Slowly and Mindfully',
       description: 'Focus on savoring your food, reducing distractions, and paying attention to hunger and fullness cues.',
       icon: Clock,
-      color: 'brand-pink'
+      color: 'brand-orange'
     },
     {
       title: 'Eat Enough Protein',
@@ -83,7 +83,7 @@ export function DashboardClient({
       title: 'Eat Enough Vegetables',
       description: 'Fill at least half your plate with non-starchy vegetables for fiber, nutrients, and volume.',
       icon: Salad,
-      color: 'brand-mint'
+      color: 'brand-green'
     },
     {
       title: 'Hydrate Consistently',
@@ -95,7 +95,7 @@ export function DashboardClient({
       title: 'Move Your Body Regularly',
       description: 'Incorporate consistent physical activity into your daily routine, finding movement you enjoy.',
       icon: Dumbbell,
-      color: 'brand-mint'
+      color: 'brand-green'
     },
     {
       title: 'Prioritize Sleep',
@@ -113,19 +113,19 @@ export function DashboardClient({
       title: 'Plan and Prepare Meals',
       description: 'Proactively think about and prepare your meals and snacks to make healthy choices easier and more consistent.',
       icon: Target,
-      color: 'brand-pink'
+      color: 'brand-orange'
     },
     {
       title: 'Master Your Environment',
       description: 'Arrange your home and workspace to support your healthy habits, making healthy choices convenient and unhealthy ones less so.',
       icon: Home,
-      color: 'brand-mint'
+      color: 'brand-green'
     },
     {
       title: 'Practice Self-Compassion',
       description: 'Treat yourself with kindness and understanding, especially when facing challenges or setbacks, rather than criticism.',
       icon: Heart,
-      color: 'brand-pink'
+      color: 'brand-orange'
     },
     {
       title: 'Understand Your Body\'s Cues',
@@ -154,7 +154,7 @@ export function DashboardClient({
   const weekTimeframe = formatWeekRange(profile.program_start_date, currentWeek)
 
   // Select a habit based on the day of year to ensure daily rotation
-  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000)
+  const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000)
   const todaysHabit = leanHabits[dayOfYear % leanHabits.length]
   const HabitIcon = todaysHabit.icon
 
@@ -170,7 +170,7 @@ export function DashboardClient({
             <p className="text-sm sm:text-base text-muted-foreground mt-1">
               {todayFormatted}
             </p>
-            <p className="text-sm text-brand-pink font-medium mt-1">
+            <p className="text-sm text-brand-orange font-medium mt-1">
               Week {currentWeek} ({weekTimeframe}) • {weekPhase.phase} Phase
             </p>
           </div>
@@ -204,7 +204,7 @@ export function DashboardClient({
           <CardHeader className="pb-2 sm:pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-medium">Progress</CardTitle>
-              <Target className="h-4 w-4 text-brand-pink" />
+              <Target className="h-4 w-4 text-brand-orange" />
             </div>
           </CardHeader>
           <CardContent>
@@ -214,7 +214,7 @@ export function DashboardClient({
             </p>
             <div className="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-brand-pink to-brand-mint transition-all duration-500"
+                className="h-full bg-gradient-to-r from-brand-orange to-brand-green transition-all duration-500"
                 style={{ width: `${completionPercentage}%` }}
               />
             </div>
@@ -251,11 +251,11 @@ export function DashboardClient({
           <CardContent>
             {isMeasurementWeekNow ? (
               <>
-                <div className="text-xl sm:text-2xl font-bold text-brand-pink animate-pulse">
+                <div className="text-xl sm:text-2xl font-bold text-brand-orange animate-pulse">
                   This Week!
                 </div>
                 <Link href="/measurements">
-                  <p className="text-xs text-brand-pink mt-1 flex items-center">
+                  <p className="text-xs text-brand-orange mt-1 flex items-center">
                     Tap to measure
                     <ChevronRight className="h-3 w-3 ml-1" />
                   </p>
@@ -273,7 +273,7 @@ export function DashboardClient({
               </>
             ) : (
               <>
-                <div className="text-xl sm:text-2xl font-bold text-brand-mint">
+                <div className="text-xl sm:text-2xl font-bold text-brand-green">
                   Complete!
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -325,7 +325,7 @@ export function DashboardClient({
                 
                 <div className="bg-gray-50 rounded-lg p-3">
                   <div className="flex items-center justify-between">
-                    <Footprints className="h-5 w-5 text-brand-mint" />
+                    <Footprints className="h-5 w-5 text-brand-green" />
                     <span className="text-xl font-bold">
                       {todayTracking.steps ? (todayTracking.steps / 1000).toFixed(1) + 'k' : '-'}
                     </span>
@@ -335,7 +335,7 @@ export function DashboardClient({
                 
                 <div className="bg-gray-50 rounded-lg p-3">
                   <div className="flex items-center justify-between">
-                    <Activity className="h-5 w-5 text-brand-pink" />
+                    <Activity className="h-5 w-5 text-brand-orange" />
                     <span className="text-xl font-bold">{todayTracking.meals?.length || 0}/4</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">Meals tracked</p>
@@ -352,8 +352,8 @@ export function DashboardClient({
             </div>
           ) : (
             <div className="text-center py-6">
-              <div className="w-16 h-16 bg-brand-pink/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Activity className="h-8 w-8 text-brand-pink" />
+              <div className="w-16 h-16 bg-brand-orange/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Activity className="h-8 w-8 text-brand-orange" />
               </div>
               <p className="text-sm text-muted-foreground mb-4">
                 Start tracking to build your healthy habits
@@ -369,7 +369,7 @@ export function DashboardClient({
       </Card>
 
       {/* Today's Lean Habit */}
-      <Card className="bg-gradient-to-br from-blue-50 to-mint-50 border-brand-blue/20 animate-fade-in-delay">
+      <Card className="bg-gradient-orange-soft border-brand-blue/20 animate-fade-in-delay">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-lg bg-${todaysHabit.color}/10 flex items-center justify-center`}>
@@ -406,8 +406,8 @@ export function DashboardClient({
             <Card className="hover:shadow-md transition-all cursor-pointer group touch-manipulation">
               <CardContent className="flex items-center justify-between p-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-brand-pink/10 rounded-full flex items-center justify-center group-hover:bg-brand-pink/20 transition-colors">
-                    <Activity className="h-5 w-5 text-brand-pink" />
+                  <div className="w-10 h-10 bg-brand-orange/10 rounded-full flex items-center justify-center group-hover:bg-brand-orange/20 transition-colors">
+                    <Activity className="h-5 w-5 text-brand-orange" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">Daily Tracking</p>
@@ -421,15 +421,15 @@ export function DashboardClient({
 
           {isMeasurementWeekNow && (
             <Link href="/measurements" className="block">
-              <Card className="hover:shadow-md transition-all cursor-pointer group touch-manipulation border-brand-pink">
+              <Card className="hover:shadow-md transition-all cursor-pointer group touch-manipulation border-brand-orange">
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-brand-mint/10 rounded-full flex items-center justify-center group-hover:bg-brand-mint/20 transition-colors">
-                      <TrendingUp className="h-5 w-5 text-brand-mint" />
+                    <div className="w-10 h-10 bg-brand-green/10 rounded-full flex items-center justify-center group-hover:bg-brand-green/20 transition-colors">
+                      <TrendingUp className="h-5 w-5 text-brand-green" />
                     </div>
                     <div>
                       <p className="font-medium text-sm">Take Measurements</p>
-                      <p className="text-xs text-brand-pink font-medium">Due this week!</p>
+                      <p className="text-xs text-brand-orange font-medium">Due this week!</p>
                     </div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
@@ -459,9 +459,9 @@ export function DashboardClient({
 
       {/* Motivational message */}
       {currentStreak > 0 && (
-        <Card className="bg-gradient-to-r from-brand-pink/10 to-brand-mint/10 border-0 animate-scale-in">
+        <Card className="bg-gradient-orange-soft border-0 animate-scale-in">
           <CardContent className="p-4 text-center">
-            <Award className="h-8 w-8 text-brand-pink mx-auto mb-2" />
+            <Award className="h-8 w-8 text-brand-orange mx-auto mb-2" />
             <p className="text-sm font-medium">
               {currentStreak >= 7 ? '🎉 Amazing work! ' : '💪 Great job! '}
               You&apos;re on a {currentStreak} day streak!
