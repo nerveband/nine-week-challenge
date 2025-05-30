@@ -32,7 +32,6 @@ const navigation = [
   { name: 'Progress', href: '/progress', icon: BarChart3 },
   { name: 'Guide', href: '/guide', icon: HelpCircle },
   { name: 'Profile', href: '/profile', icon: User },
-  { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export default function DashboardLayout({
@@ -252,8 +251,8 @@ export default function DashboardLayout({
       </div>
 
       {/* Main content - Enhanced tablet/desktop layout */}
-      <div className="lg:pl-64 flex flex-col">
-        <main className="flex-1 pt-16 lg:pt-0">
+      <div className="lg:pl-64 flex flex-col min-h-screen">
+        <main className="flex-1 pt-16 lg:pt-0 pb-20 lg:pb-0">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">
             <div className="animate-fade-in">
               {children}
@@ -262,8 +261,8 @@ export default function DashboardLayout({
         </main>
         
         {/* Mobile bottom navigation - Enhanced with animations */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 safe-area-padding-x z-20">
-          <div className="flex justify-around items-center h-16 pb-safe">
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-20" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          <div className="flex justify-around items-center h-16 px-2">
             {navigation.slice(0, 4).map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -292,7 +291,7 @@ export default function DashboardLayout({
 
       {/* PWA install prompt */}
       {showInstallPrompt && (
-        <div className="md:hidden fixed bottom-24 left-4 right-4 bg-white rounded-lg shadow-lg p-4 z-30 animate-slide-up">
+        <div className="md:hidden fixed left-4 right-4 bg-white rounded-lg shadow-lg p-4 z-30 animate-slide-up" style={{ bottom: `calc(5rem + env(safe-area-inset-bottom))` }}>
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <p className="font-medium text-sm">Install Nine Week Challenge</p>
