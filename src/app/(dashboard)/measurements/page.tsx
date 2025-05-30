@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { measurementSchema, type MeasurementInput } from '@/lib/validations'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Loader2, Ruler, TrendingDown, Calendar, Camera, AlertCircle, Eye, Scale } from 'lucide-react'
+import { Loader2, Ruler, TrendingDown, Calendar, AlertCircle, Eye, Scale } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { getCurrentWeek, isMeasurementWeek, MEASUREMENT_WEEKS } from '@/lib/utils'
 import { MeasurementsCalendar } from '@/components/measurements/measurements-calendar'
@@ -546,21 +546,6 @@ export default function MeasurementsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-50 border-dashed">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Camera className="h-5 w-5 text-brand-blue" />
-                Progress Photo
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">Optional: Take a photo to track visual progress</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button type="button" variant="outline" className="w-full h-12" disabled>
-                <Camera className="mr-2 h-4 w-4" />
-                Take Photo (Coming Soon)
-              </Button>
-            </CardContent>
-          </Card>
 
           {/* Mobile floating save button */}
           <div className="md:hidden fixed bottom-20 left-4 right-4 z-20">
