@@ -258,6 +258,7 @@ export default function TrackingPage() {
                 fullness_after: meal.fullness_after,
                 duration_minutes: meal.duration_minutes,
                 snack_reason: meal.snack_reason,
+                emotion: meal.emotion,
               })
               .eq('id', existingMeal.id)
           } else {
@@ -362,7 +363,8 @@ export default function TrackingPage() {
         hunger_before: 5,
         fullness_after: 7,
         duration_minutes: 20,
-        snack_reason: ''
+        snack_reason: '',
+        emotion: ''
       })
     }
   }
@@ -524,26 +526,27 @@ export default function TrackingPage() {
                   </span>
                   <span className="text-xl font-bold">{Math.round((watch('ounces_water') || 64) / 8)} cups</span>
                 </Label>
-                <div className="grid grid-cols-8 gap-1">
-                  {Array.from({ length: 8 }).map((_, i) => (
+                <div className="grid grid-cols-4 sm:grid-cols-8 md:grid-cols-10 gap-1 sm:gap-2">
+                  {Array.from({ length: 20 }).map((_, i) => (
                     <button
                       key={i}
                       type="button"
                       onClick={() => setValue('ounces_water', (i + 1) * 8)}
-                      className={`h-8 rounded-md transition-all ${
+                      className={`h-8 sm:h-10 rounded-md transition-all ${
                         (watch('ounces_water') || 64) >= (i + 1) * 8
                           ? 'bg-blue-500 hover:bg-blue-600'
                           : 'bg-gray-200 hover:bg-gray-300'
                       }`}
                       aria-label={`${i + 1} glasses`}
                     >
-                      <Droplets className="h-4 w-4 mx-auto text-white" />
+                      <Droplets className="h-3 w-3 sm:h-4 sm:w-4 mx-auto text-white" />
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground text-center">
-                  Tap to set • 1 cup = 8 oz • Goal: 8 cups (64 oz)
-                </p>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Tap to set • 1 cup = 8 oz</span>
+                  <span>Goal: 8+ cups (64+ oz)</span>
+                </div>
               </div>
 
               {/* Steps */}
@@ -646,16 +649,19 @@ export default function TrackingPage() {
                       <Checkbox
                         id={`ate-${mealType}`}
                         checked={hasMeal}
-                        onCheckedChange={(checked) => {
+                        onCheckedChange={(checked: boolean) => {
                           if (checked) {
                             addOrUpdateMeal(mealType)
                           } else {
+                            // Remove meal from field array if exists
                             const idx = mealFields.findIndex(f => f.meal_type === mealType)
-                            if (idx !== -1) removeMeal(idx)
+                            if (idx !== -1) {
+                              removeMeal(idx)
+                            }
                           }
                         }}
                       />
-                      <Label htmlFor={`ate-${mealType}`} className="cursor-pointer">
+                      <Label htmlFor={`ate-${mealType}`} className="cursor-pointer select-none">
                         {isSnack ? 'Did you have a snack?' : 'Did you eat this meal?'}
                       </Label>
                     </div>
@@ -675,51 +681,118 @@ export default function TrackingPage() {
                           </div>
                         )}
 
-                        {/* Week 1-3: Distracted? / Snack reason */}
-                        {weekPhase === 'basic' && (
-                          <>
-                            {!isSnack ? (
-                              <div className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`distracted-${mealType}`}
-                                  defaultChecked={existingMeal?.distracted}
-                                  {...(mealIndex !== -1 && register(`meals.${mealIndex}.distracted`))}
-                                />
-                                <Label htmlFor={`distracted-${mealType}`} className="text-sm cursor-pointer">
-                                  Were you distracted during this meal?
-                                </Label>
-                              </div>
-                            ) : (
-                              <div className="space-y-2">
-                                <Label className="text-xs">Why did you have a snack?</Label>
-                                <Input
-                                  type="text"
-                                  placeholder="Hunger, boredom, emotion, stress..."
-                                  className="h-10"
-                                  defaultValue={existingMeal?.snack_reason}
-                                  {...(mealIndex !== -1 && register(`meals.${mealIndex}.snack_reason`))}
-                                />
-                              </div>
-                            )}
-                          </>
+                        {/* Was I distracted while eating? - All weeks, all meals */}
+                        {!isSnack && (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`distracted-${mealType}`}
+                              defaultChecked={existingMeal?.distracted}
+                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.distracted`))}
+                            />
+                            <Label htmlFor={`distracted-${mealType}`} className="text-sm cursor-pointer select-none">
+                              Was I distracted while eating?
+                            </Label>
+                          </div>
                         )}
 
-                        {/* Week 4-6: Ate slowly? + Hunger minutes */}
-                        {weekPhase === 'hunger' && !isSnack && (
-                          <>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`slowly-${mealType}`}
-                                defaultChecked={existingMeal?.ate_slowly}
-                                {...(mealIndex !== -1 && register(`meals.${mealIndex}.ate_slowly`))}
-                              />
-                              <Label htmlFor={`slowly-${mealType}`} className="text-sm cursor-pointer">
-                                Did you eat more slowly? (fork down between bites)
+                        {/* Snack reason - All weeks for snacks */}
+                        {isSnack && (
+                          <div className="space-y-2">
+                            <Label className="text-xs">Why did you have a snack?</Label>
+                            <Select
+                              value={watch(`meals.${mealIndex}.snack_reason`) || existingMeal?.snack_reason || ''}
+                              onValueChange={(value) => mealIndex !== -1 && setValue(`meals.${mealIndex}.snack_reason`, value)}
+                            >
+                              <SelectTrigger className="h-10">
+                                <SelectValue placeholder="Select or enter a reason" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="hunger">Hunger</SelectItem>
+                                <SelectItem value="boredom">Boredom</SelectItem>
+                                <SelectItem value="stress">Stress</SelectItem>
+                                <SelectItem value="anxiety">Anxiety</SelectItem>
+                                <SelectItem value="social">Social pressure</SelectItem>
+                                <SelectItem value="convenience">Convenience</SelectItem>
+                                <SelectItem value="emotion">Emotional</SelectItem>
+                                <SelectItem value="craving">Craving</SelectItem>
+                                <SelectItem value="habit">Habit</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              type="text"
+                              placeholder="Or enter your own reason..."
+                              className="h-10"
+                              defaultValue={!['hunger', 'boredom', 'stress', 'anxiety', 'social', 'convenience', 'emotion', 'craving', 'habit'].includes(existingMeal?.snack_reason || '') ? existingMeal?.snack_reason : ''}
+                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.snack_reason`))}
+                            />
+                          </div>
+                        )}
+
+                        {/* Emotion tracking for snacks */}
+                        {isSnack && (
+                          <div className="space-y-2">
+                            <Label className="text-xs">Was there any emotion associated with this snack?</Label>
+                            <Input
+                              type="text"
+                              placeholder="Happy, sad, anxious, celebrating..."
+                              className="h-10"
+                              defaultValue={existingMeal?.emotion}
+                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.emotion`))}
+                            />
+                          </div>
+                        )}
+
+                        {/* Did you eat more slowly? - All weeks except week 1-3 */}
+                        {!isSnack && weekPhase !== 'basic' && (
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`slowly-${mealType}`}
+                              defaultChecked={existingMeal?.ate_slowly}
+                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.ate_slowly`))}
+                            />
+                            <div className="flex items-center gap-2">
+                              <Label htmlFor={`slowly-${mealType}`} className="text-sm cursor-pointer select-none">
+                                Did you eat more slowly?
                               </Label>
+                              <button
+                                type="button"
+                                className="text-brand-blue hover:text-brand-blue/80"
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  toast({
+                                    title: 'Eating Slowly',
+                                    description: 'Put your fork/food down after each bite, don\'t pick it back up until you have swallowed. Take smaller bites and be aware of how fast you\'re chewing.',
+                                  })
+                                }}
+                              >
+                                <Info className="h-4 w-4" />
+                              </button>
                             </div>
-                            
+                          </div>
+                        )}
+
+                        {/* Hunger tracking - Week 4+ for non-snacks */}
+                        {weekPhase !== 'basic' && !isSnack && (
+                          <>
                             <div className="space-y-2">
-                              <Label className="text-xs">How long were you hungry before this meal?</Label>
+                              <Label className="text-xs flex items-center gap-2">
+                                How long were you hungry before this meal?
+                                {weekPhase === 'hunger' && (
+                                  <button
+                                    type="button"
+                                    className="text-brand-blue hover:text-brand-blue/80"
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      toast({
+                                        title: 'Hunger Awareness',
+                                        description: 'Hunger feels like an "empty hollow sensation" in your stomach. It may come and go in waves. Goal: feel hunger for 30-60 minutes before each meal.',
+                                      })
+                                    }}
+                                  >
+                                    <Info className="h-4 w-4" />
+                                  </button>
+                                )}
+                              </Label>
                               <div className="flex items-center gap-2">
                                 <Input
                                   type="number"
@@ -736,39 +809,24 @@ export default function TrackingPage() {
                           </>
                         )}
 
-                        {/* Week 7-9: All previous + Fullness scale */}
+                        {/* Fullness scale - Week 7-9 for non-snacks */}
                         {weekPhase === 'satisfaction' && !isSnack && (
                           <>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`slowly-${mealType}`}
-                                defaultChecked={existingMeal?.ate_slowly}
-                                {...(mealIndex !== -1 && register(`meals.${mealIndex}.ate_slowly`))}
-                              />
-                              <Label htmlFor={`slowly-${mealType}`} className="text-sm cursor-pointer">
-                                Did you eat more slowly? (fork down between bites)
-                              </Label>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label className="text-xs">How long were you hungry before this meal?</Label>
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  type="number"
-                                  inputMode="numeric"
-                                  min="0"
-                                  max="180"
-                                  className="h-10 w-24"
-                                  defaultValue={existingMeal?.hunger_minutes || 0}
-                                  {...(mealIndex !== -1 && register(`meals.${mealIndex}.hunger_minutes`, { valueAsNumber: true }))}
-                                />
-                                <span className="text-sm text-muted-foreground">minutes</span>
-                              </div>
-                            </div>
-
                             <div className="space-y-3">
                               <Label className="text-xs flex items-center justify-between">
-                                <span>Fullness after eating</span>
+                                <span className="flex items-center gap-2">
+                                  Fullness immediately after eating
+                                  <button
+                                    type="button"
+                                    className="text-brand-blue hover:text-brand-blue/80"
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      setShowFullnessReference(true)
+                                    }}
+                                  >
+                                    <Info className="h-4 w-4" />
+                                  </button>
+                                </span>
                                 <span className="text-lg font-bold text-brand-mint">
                                   {watch(`meals.${mealIndex}.fullness_after`) || existingMeal?.fullness_after || 7}
                                 </span>
@@ -782,12 +840,31 @@ export default function TrackingPage() {
                                 className="w-full"
                               />
                               <div className="flex justify-between text-xs text-muted-foreground">
-                                <span>Still hungry</span>
-                                <span>Just right</span>
-                                <span>Too full</span>
+                                <span>1-3: Hungry</span>
+                                <span>5-7: Satisfied</span>
+                                <span>8-10: Too full</span>
                               </div>
                             </div>
                           </>
+                        )}
+
+                        {/* How long did fullness last */}
+                        {!isSnack && (
+                          <div className="space-y-2">
+                            <Label className="text-xs">How long did you feel full after this meal?</Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="number"
+                                inputMode="numeric"
+                                min="0"
+                                max="480"
+                                className="h-10 w-24"
+                                defaultValue={existingMeal?.duration_minutes || 0}
+                                {...(mealIndex !== -1 && register(`meals.${mealIndex}.duration_minutes`, { valueAsNumber: true }))}
+                              />
+                              <span className="text-sm text-muted-foreground">minutes</span>
+                            </div>
+                          </div>
                         )}
 
                         {/* Hidden fields */}
@@ -921,6 +998,19 @@ export default function TrackingPage() {
                 <Label htmlFor="daily_win" className="text-sm flex items-center gap-2">
                   <Trophy className="h-4 w-4 text-brand-yellow" />
                   Today&apos;s Win
+                  <button
+                    type="button"
+                    className="text-brand-blue hover:text-brand-blue/80"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      toast({
+                        title: 'Daily Win Examples',
+                        description: 'Examples: "Drank all my water", "Took a walk instead of snacking", "Ate slowly at dinner", "Recognized hunger vs craving", "Stopped eating when satisfied"',
+                      })
+                    }}
+                  >
+                    <Info className="h-4 w-4" />
+                  </button>
                 </Label>
                 <Input
                   id="daily_win"

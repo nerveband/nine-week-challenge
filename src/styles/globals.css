@@ -60,6 +60,10 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   /* Disable pull-to-refresh on Chrome mobile */
   body {
     overscroll-behavior-y: contain;

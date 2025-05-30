@@ -19,6 +19,8 @@ import {
   X,
   Bell,
   Settings,
+  HelpCircle,
+  Camera,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -26,7 +28,9 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Daily Tracking', href: '/tracking', icon: Activity },
   { name: 'Measurements', href: '/measurements', icon: Ruler },
+  { name: 'Photos', href: '/photos', icon: Camera },
   { name: 'Progress', href: '/progress', icon: BarChart3 },
+  { name: 'Guide', href: '/guide', icon: HelpCircle },
   { name: 'Profile', href: '/profile', icon: User },
 ]
 
@@ -169,19 +173,14 @@ export default function DashboardLayout({
           </nav>
           
           <div className="border-t border-gray-200 p-4 space-y-2">
-            <button
+            <Link
+              href="/settings"
               className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md"
-              onClick={() => {
-                toast({
-                  title: 'Coming soon',
-                  description: 'Settings will be available soon!'
-                })
-                setSidebarOpen(false)
-              }}
+              onClick={() => setSidebarOpen(false)}
             >
               <Settings className="mr-3 h-6 w-6" />
               Settings
-            </button>
+            </Link>
             <button
               className="flex items-center w-full px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md"
               onClick={handleSignOut}
@@ -256,7 +255,7 @@ export default function DashboardLayout({
         
         {/* Mobile bottom navigation - Enhanced with animations */}
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 safe-area-padding-x z-20">
-          <div className="flex justify-around items-center h-16">
+          <div className="flex justify-around items-center h-16 pb-safe">
             {navigation.slice(0, 4).map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -285,7 +284,7 @@ export default function DashboardLayout({
 
       {/* PWA install prompt */}
       {showInstallPrompt && (
-        <div className="md:hidden fixed bottom-20 left-4 right-4 bg-white rounded-lg shadow-lg p-4 z-30 animate-slide-up">
+        <div className="md:hidden fixed bottom-24 left-4 right-4 bg-white rounded-lg shadow-lg p-4 z-30 animate-slide-up">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <p className="font-medium text-sm">Install Nine Week Challenge</p>

@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { profileSchema, type ProfileInput } from '@/lib/validations'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Loader2, User, Calendar, LogOut, AlertCircle } from 'lucide-react'
+import { Loader2, User, Calendar, LogOut, AlertCircle, Key } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { calculateAge, formatDate, getCurrentWeek } from '@/lib/utils'
 
@@ -23,6 +23,9 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false)
   const [profile, setProfile] = useState<any>(null)
   const [currentWeek, setCurrentWeek] = useState(1)
+  const [showPasswordChange, setShowPasswordChange] = useState(false)
+  const [passwordData, setPasswordData] = useState({ password: '', confirmPassword: '' })
+  const [passwordError, setPasswordError] = useState('')
 
   const {
     register,
@@ -132,6 +135,46 @@ export default function ProfilePage() {
     }
   }
 
+  const handlePasswordChange = async () => {
+    setPasswordError('')
+    
+    if (passwordData.password.length < 6) {
+      setPasswordError('Password must be at least 6 characters')
+      return
+    }
+    
+    if (passwordData.password !== passwordData.confirmPassword) {
+      setPasswordError('Passwords do not match')
+      return
+    }
+    
+    setIsSaving(true)
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.password
+      })
+      
+      if (error) throw error
+      
+      toast({
+        title: 'Success',
+        description: 'Password updated successfully!',
+      })
+      
+      setShowPasswordChange(false)
+      setPasswordData({ password: '', confirmPassword: '' })
+    } catch (error) {
+      console.error('Error changing password:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to update password',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -141,7 +184,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
+    <div className="space-y-4 sm:space-y-6 pb-32 md:pb-0">
       {/* Mobile-optimized header */}
       <div className="animate-fade-in">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Profile</h1>
@@ -310,8 +353,87 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
+        {/* Account Security */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Key className="h-5 w-5 text-brand-yellow" />
+              Account Security
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Manage your password and security settings</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!showPasswordChange ? (
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowPasswordChange(true)}
+                className="w-full sm:w-auto"
+              >
+                Change Password
+              </Button>
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium">New Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter new password"
+                    value={passwordData.password}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, password: e.target.value }))}
+                    className="h-12"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="h-12"
+                  />
+                </div>
+                {passwordError && (
+                  <p className="text-xs text-red-600">{passwordError}</p>
+                )}
+                <div className="flex gap-2">
+                  <Button 
+                    type="button"
+                    variant="brand"
+                    onClick={handlePasswordChange}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Password'
+                    )}
+                  </Button>
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowPasswordChange(false)
+                      setPasswordData({ password: '', confirmPassword: '' })
+                      setPasswordError('')
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Mobile floating save button */}
-        <div className="md:hidden fixed bottom-20 left-4 right-4 z-20">
+        <div className="md:hidden fixed bottom-24 left-4 right-4 z-20">
           <Button 
             type="submit" 
             variant="brand" 

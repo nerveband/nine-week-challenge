@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2, Download, TrendingDown, Droplets, Moon, Footprints, Cookie, Calendar, Utensils } from 'lucide-react'
 import type { Database } from '@/types/database'
-import { getCurrentWeek, getStreakDays } from '@/lib/utils'
+import { getCurrentWeek, getStreakDays, generateProgressReport } from '@/lib/utils'
+import { useToast } from '@/components/ui/use-toast'
 import {
   LineChart,
   Line,
@@ -42,6 +43,7 @@ const COLORS = {
 
 export default function ProgressPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const supabase = createClientComponentClient<Database>()
   const [isLoading, setIsLoading] = useState(false)
   const [currentWeek, setCurrentWeek] = useState(1)
@@ -211,8 +213,29 @@ export default function ProgressPage() {
   }
 
   const exportData = () => {
-    // TODO: Implement CSV export
-    console.log('Export functionality coming soon!')
+    try {
+      const fileCount = generateProgressReport(progressData)
+      
+      if (fileCount > 0) {
+        toast({
+          title: 'Export Successful',
+          description: `Downloaded ${fileCount} CSV file${fileCount > 1 ? 's' : ''} to your device.`,
+        })
+      } else {
+        toast({
+          title: 'No Data to Export',
+          description: 'Start tracking to build your progress data.',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      console.error('Export error:', error)
+      toast({
+        title: 'Export Failed',
+        description: 'There was an error exporting your data. Please try again.',
+        variant: 'destructive',
+      })
+    }
   }
 
   if (isLoading) {

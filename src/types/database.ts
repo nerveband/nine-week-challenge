@@ -16,9 +16,15 @@ export interface Database {
           name: string
           birthdate: string | null
           height_inches: number | null
+          height_feet: number | null
+          starting_weight: number | null
+          goal_weight: number | null
           location: string | null
           profile_photo_url: string | null
           program_start_date: string
+          profile_complete: boolean
+          measurement_unit: 'inches' | 'cm'
+          allow_week_skipping: boolean
           created_at: string
           updated_at: string
         }
@@ -28,9 +34,15 @@ export interface Database {
           name: string
           birthdate?: string | null
           height_inches?: number | null
+          height_feet?: number | null
+          starting_weight?: number | null
+          goal_weight?: number | null
           location?: string | null
           profile_photo_url?: string | null
           program_start_date: string
+          profile_complete?: boolean
+          measurement_unit?: 'inches' | 'cm'
+          allow_week_skipping?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -40,9 +52,15 @@ export interface Database {
           name?: string
           birthdate?: string | null
           height_inches?: number | null
+          height_feet?: number | null
+          starting_weight?: number | null
+          goal_weight?: number | null
           location?: string | null
           profile_photo_url?: string | null
           program_start_date?: string
+          profile_complete?: boolean
+          measurement_unit?: 'inches' | 'cm'
+          allow_week_skipping?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -134,6 +152,7 @@ export interface Database {
           fullness_after: number | null
           duration_minutes: number | null
           snack_reason: string | null
+          emotion: string | null
           created_at: string
         }
         Insert: {
@@ -149,6 +168,7 @@ export interface Database {
           fullness_after?: number | null
           duration_minutes?: number | null
           snack_reason?: string | null
+          emotion?: string | null
           created_at?: string
         }
         Update: {
@@ -164,6 +184,7 @@ export interface Database {
           fullness_after?: number | null
           duration_minutes?: number | null
           snack_reason?: string | null
+          emotion?: string | null
           created_at?: string
         }
       }
@@ -190,6 +211,38 @@ export interface Database {
           treat_type?: string
           quantity?: number
           description?: string | null
+          created_at?: string
+        }
+      }
+      photos: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          photo_url: string
+          photo_type: 'front' | 'side' | 'back' | 'progress' | 'other'
+          week_number: number
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          photo_url: string
+          photo_type: 'front' | 'side' | 'back' | 'progress' | 'other'
+          week_number: number
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          photo_url?: string
+          photo_type?: 'front' | 'side' | 'back' | 'progress' | 'other'
+          week_number?: number
+          notes?: string | null
           created_at?: string
         }
       }

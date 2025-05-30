@@ -50,8 +50,9 @@ export const mealSchema = z.object({
   hunger_minutes: z.number().min(0).max(180).optional(),
   hunger_before: z.number().min(1).max(10).optional(),
   fullness_after: z.number().min(1).max(10).optional(),
-  duration_minutes: z.number().min(1).max(180).optional(),
-  snack_reason: z.string().max(200).optional()
+  duration_minutes: z.number().min(1).max(480).optional(),
+  snack_reason: z.string().max(200).optional(),
+  emotion: z.string().max(200).optional()
 })
 
 export const treatSchema = z.object({
