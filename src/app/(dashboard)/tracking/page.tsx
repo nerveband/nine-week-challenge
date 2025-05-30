@@ -154,7 +154,35 @@ export default function TrackingPage() {
         setTrackingId(tracking.id)
         setExistingMeals(tracking.meals || [])
         setExistingTreats(tracking.treats || [])
-        setHadTreat((tracking.treats || []).length > 0)
+        
+        // Convert existing meals to form data
+        const mealsData = (tracking.meals || []).map((meal: any) => ({
+          meal_type: meal.meal_type,
+          meal_name: meal.meal_name || (meal.meal_type === 'snack' ? 'Snack' : 
+                     meal.meal_type === 'meal1' ? 'Breakfast' :
+                     meal.meal_type === 'meal2' ? 'Lunch' :
+                     meal.meal_type === 'meal3' ? 'Dinner' : 'Meal'),
+          ate_meal: meal.ate_meal !== false,
+          meal_time: meal.meal_time || '',
+          distracted: meal.distracted || false,
+          ate_slowly: meal.ate_slowly || false,
+          hunger_minutes: meal.hunger_minutes || 0,
+          hunger_before: meal.hunger_before || 5,
+          fullness_after: meal.fullness_after || 7,
+          duration_minutes: meal.duration_minutes || 20,
+          snack_reason: meal.snack_reason || '',
+          emotion: meal.emotion || ''
+        }))
+        
+        // Convert existing treats to form data
+        const treatsData = (tracking.treats || []).map((treat: any) => ({
+          treat_type: treat.treat_type,
+          quantity: treat.quantity || 1,
+          description: treat.description || ''
+        }))
+        
+        // Update hadTreat state based on existing treats
+        setHadTreat(treatsData.length > 0)
         
         reset({
           hours_sleep: tracking.hours_sleep || 8,
@@ -162,6 +190,8 @@ export default function TrackingPage() {
           steps: tracking.steps || 5000,
           daily_win: tracking.daily_win || '',
           notes: tracking.notes || '',
+          meals: mealsData,
+          treats: treatsData
         })
       } else {
         // Clear form for new date
@@ -176,6 +206,8 @@ export default function TrackingPage() {
           steps: 5000,
           daily_win: '',
           notes: '',
+          meals: [],
+          treats: []
         })
       }
 
@@ -648,9 +680,8 @@ export default function TrackingPage() {
                           <Input
                             type="text"
                             placeholder={isSnack ? 'Snack' : `Meal ${mealType.slice(-1)}`}
-                            defaultValue={existingMeal?.meal_name || (isSnack ? 'Snack' : `Meal ${mealType.slice(-1)}`)}
                             className="font-semibold border-none bg-transparent p-0 h-auto focus:bg-gray-50 focus:border focus:p-2 focus:h-8"
-                            {...(mealIndex !== -1 && register(`meals.${mealIndex}.meal_name`))}
+                            {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.meal_name`)}
                           />
                         ) : (
                           <h3 className="font-semibold">
@@ -670,7 +701,9 @@ export default function TrackingPage() {
                         checked={hasMeal}
                         onCheckedChange={(checked: boolean) => {
                           if (checked) {
-                            addOrUpdateMeal(mealType)
+                            if (mealIndex === -1) {
+                              addOrUpdateMeal(mealType)
+                            }
                           } else {
                             // Remove meal from field array if exists
                             const idx = mealFields.findIndex(f => f.meal_type === mealType)
@@ -694,8 +727,7 @@ export default function TrackingPage() {
                             <Input
                               type="time"
                               className="h-10 w-32"
-                              defaultValue={existingMeal?.meal_time}
-                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.meal_time`))}
+                              {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.meal_time`)}
                             />
                           </div>
                         )}
@@ -705,8 +737,7 @@ export default function TrackingPage() {
                           <div className="flex items-center space-x-2">
                             <Checkbox
                               id={`distracted-${mealType}`}
-                              defaultChecked={existingMeal?.distracted}
-                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.distracted`))}
+                              {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.distracted`)}
                             />
                             <Label htmlFor={`distracted-${mealType}`} className="text-sm cursor-pointer select-none">
                               Was I distracted while eating?
@@ -719,8 +750,8 @@ export default function TrackingPage() {
                           <div className="space-y-2">
                             <Label className="text-xs">Why did you have a snack?</Label>
                             <Select
-                              value={watch(`meals.${mealIndex}.snack_reason`) || existingMeal?.snack_reason || ''}
-                              onValueChange={(value) => mealIndex !== -1 && setValue(`meals.${mealIndex}.snack_reason`, value)}
+                              value={watch(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.snack_reason`) || ''}
+                              onValueChange={(value) => setValue(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.snack_reason`, value)}
                             >
                               <SelectTrigger className="h-10">
                                 <SelectValue placeholder="Select or enter a reason" />
@@ -741,8 +772,7 @@ export default function TrackingPage() {
                               type="text"
                               placeholder="Or enter your own reason..."
                               className="h-10"
-                              defaultValue={!['hunger', 'boredom', 'stress', 'anxiety', 'social', 'convenience', 'emotion', 'craving', 'habit'].includes(existingMeal?.snack_reason || '') ? existingMeal?.snack_reason : ''}
-                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.snack_reason`))}
+                              {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.snack_reason`)}
                             />
                           </div>
                         )}
@@ -755,8 +785,7 @@ export default function TrackingPage() {
                               type="text"
                               placeholder="Happy, sad, anxious, celebrating..."
                               className="h-10"
-                              defaultValue={existingMeal?.emotion}
-                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.emotion`))}
+                              {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.emotion`)}
                             />
                           </div>
                         )}
@@ -766,8 +795,7 @@ export default function TrackingPage() {
                           <div className="flex items-center space-x-2">
                             <Checkbox
                               id={`slowly-${mealType}`}
-                              defaultChecked={existingMeal?.ate_slowly}
-                              {...(mealIndex !== -1 && register(`meals.${mealIndex}.ate_slowly`))}
+                              {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.ate_slowly`)}
                             />
                             <div className="flex items-center gap-2">
                               <Label htmlFor={`slowly-${mealType}`} className="text-sm cursor-pointer select-none">
@@ -819,8 +847,7 @@ export default function TrackingPage() {
                                   min="0"
                                   max="180"
                                   className="h-10 w-24"
-                                  defaultValue={existingMeal?.hunger_minutes || 0}
-                                  {...(mealIndex !== -1 && register(`meals.${mealIndex}.hunger_minutes`, { valueAsNumber: true }))}
+                                  {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.hunger_minutes`, { valueAsNumber: true })}
                                 />
                                 <span className="text-sm text-muted-foreground">minutes</span>
                               </div>
@@ -847,15 +874,15 @@ export default function TrackingPage() {
                                   </button>
                                 </span>
                                 <span className="text-lg font-bold text-brand-green">
-                                  {watch(`meals.${mealIndex}.fullness_after`) || existingMeal?.fullness_after || 7}
+                                  {watch(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.fullness_after`) || 7}
                                 </span>
                               </Label>
                               <Slider
                                 min={1}
                                 max={10}
                                 step={1}
-                                defaultValue={[existingMeal?.fullness_after || 7]}
-                                onValueChange={(value) => mealIndex !== -1 && setValue(`meals.${mealIndex}.fullness_after`, value[0])}
+                                value={[watch(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.fullness_after`) || 7]}
+                                onValueChange={(value) => setValue(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.fullness_after`, value[0])}
                                 className="w-full"
                               />
                               <div className="flex justify-between text-xs text-muted-foreground">
@@ -878,8 +905,7 @@ export default function TrackingPage() {
                                 min="0"
                                 max="480"
                                 className="h-10 w-24"
-                                defaultValue={existingMeal?.duration_minutes || 0}
-                                {...(mealIndex !== -1 && register(`meals.${mealIndex}.duration_minutes`, { valueAsNumber: true }))}
+                                {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.duration_minutes`, { valueAsNumber: true })}
                               />
                               <span className="text-sm text-muted-foreground">minutes</span>
                             </div>
@@ -887,12 +913,10 @@ export default function TrackingPage() {
                         )}
 
                         {/* Hidden fields */}
-                        {mealIndex !== -1 && (
-                          <>
-                            <input type="hidden" {...register(`meals.${mealIndex}.meal_type`)} value={mealType} />
-                            <input type="hidden" {...register(`meals.${mealIndex}.ate_meal`)} value="true" />
-                          </>
-                        )}
+                        <>
+                          <input type="hidden" {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.meal_type`)} value={mealType} />
+                          <input type="hidden" {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.ate_meal`)} value="true" />
+                        </>
                       </div>
                     )}
                   </div>
@@ -921,7 +945,9 @@ export default function TrackingPage() {
                     setHadTreat(!!checked)
                     if (!checked) {
                       // Clear all treats
-                      treatFields.forEach((_, index) => removeTreat(0))
+                      while (treatFields.length > 0) {
+                        removeTreat(0)
+                      }
                     } else if (treatFields.length === 0) {
                       // Add one treat entry
                       appendTreat({ treat_type: '', quantity: 1, description: '' })
@@ -975,16 +1001,6 @@ export default function TrackingPage() {
                         className="h-10"
                         {...register(`treats.${index}.description`)}
                       />
-                    </div>
-                  ))}
-                  
-                  {/* Existing treats display */}
-                  {existingTreats.map((treat, index) => (
-                    <div key={`existing-${index}`} className="p-3 bg-gray-50 rounded-lg text-sm">
-                      <p className="font-medium">{treat.treat_type}</p>
-                      {treat.description && (
-                        <p className="text-muted-foreground">{treat.description}</p>
-                      )}
                     </div>
                   ))}
                   
