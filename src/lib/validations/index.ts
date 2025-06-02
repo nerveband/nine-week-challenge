@@ -38,7 +38,8 @@ export const dailyTrackingSchema = z.object({
   ounces_water: z.number().min(0).max(300).optional(),
   steps: z.number().min(0).max(100000).optional(),
   daily_win: z.string().max(500).optional(),
-  notes: z.string().max(1000).optional()
+  notes: z.string().max(1000).optional(),
+  is_fasting: z.boolean().optional()
 })
 
 export const mealSchema = z.object({

@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Settings, RefreshCw, Calendar, Ruler, SkipForward, AlertTriangle, Loader2 } from 'lucide-react'
+import { Settings, RefreshCw, Calendar, Ruler, SkipForward, AlertTriangle, Loader2, Bell } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { formatDate } from '@/lib/utils'
 
@@ -25,6 +25,14 @@ export default function SettingsPage() {
     measurementUnit: 'inches',
     allowWeekSkipping: false,
     theme: 'light'
+  })
+  const [notifications, setNotifications] = useState({
+    morning: false,
+    afternoon: false,
+    evening: false,
+    morningTime: '08:00',
+    afternoonTime: '12:00',
+    eveningTime: '18:00'
   })
   const [newStartDate, setNewStartDate] = useState('')
 
@@ -58,6 +66,17 @@ export default function SettingsPage() {
           theme: localStorage.getItem('theme') || 'light'
         }
         setSettings(savedSettings)
+        
+        // Load notification settings
+        const savedNotifications = {
+          morning: profile.notification_morning || false,
+          afternoon: profile.notification_afternoon || false,
+          evening: profile.notification_evening || false,
+          morningTime: profile.notification_morning_time || '08:00',
+          afternoonTime: profile.notification_afternoon_time || '12:00',
+          eveningTime: profile.notification_evening_time || '18:00'
+        }
+        setNotifications(savedNotifications)
       }
     } catch (error) {
       console.error('Error loading settings:', error)
@@ -78,6 +97,12 @@ export default function SettingsPage() {
         .update({
           measurement_unit: settings.measurementUnit,
           allow_week_skipping: settings.allowWeekSkipping,
+          notification_morning: notifications.morning,
+          notification_afternoon: notifications.afternoon,
+          notification_evening: notifications.evening,
+          notification_morning_time: notifications.morningTime,
+          notification_afternoon_time: notifications.afternoonTime,
+          notification_evening_time: notifications.eveningTime,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id)
@@ -253,6 +278,104 @@ export default function SettingsPage() {
               'Save Preferences'
             )}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Notifications */}
+      <Card className="animate-fade-in-delay-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-brand-blue" />
+            Notifications
+          </CardTitle>
+          <CardDescription>Set reminders for daily tracking (off by default)</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Morning Notification */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="morning-notification" className="text-base">
+                Morning Reminder
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Get reminded to start your day with tracking
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="time"
+                value={notifications.morningTime}
+                onChange={(e) => setNotifications(prev => ({ ...prev, morningTime: e.target.value }))}
+                disabled={!notifications.morning}
+                className="h-9 w-20 rounded-md border border-input bg-background px-2 text-sm ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <Switch
+                id="morning-notification"
+                checked={notifications.morning}
+                onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, morning: checked }))}
+              />
+            </div>
+          </div>
+
+          {/* Afternoon Notification */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="afternoon-notification" className="text-base">
+                Afternoon Check-in
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Reminder to log your lunch and progress
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="time"
+                value={notifications.afternoonTime}
+                onChange={(e) => setNotifications(prev => ({ ...prev, afternoonTime: e.target.value }))}
+                disabled={!notifications.afternoon}
+                className="h-9 w-20 rounded-md border border-input bg-background px-2 text-sm ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <Switch
+                id="afternoon-notification"
+                checked={notifications.afternoon}
+                onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, afternoon: checked }))}
+              />
+            </div>
+          </div>
+
+          {/* Evening Notification */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="evening-notification" className="text-base">
+                Evening Reflection
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Complete your daily tracking and reflect
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="time"
+                value={notifications.eveningTime}
+                onChange={(e) => setNotifications(prev => ({ ...prev, eveningTime: e.target.value }))}
+                disabled={!notifications.evening}
+                className="h-9 w-20 rounded-md border border-input bg-background px-2 text-sm ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <Switch
+                id="evening-notification"
+                checked={notifications.evening}
+                onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, evening: checked }))}
+              />
+            </div>
+          </div>
+
+          {(notifications.morning || notifications.afternoon || notifications.evening) && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-800">
+                💡 <strong>Tip:</strong> Notifications will help you stay consistent with your daily tracking. You can always turn them off later.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

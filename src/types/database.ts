@@ -25,6 +25,12 @@ export interface Database {
           profile_complete: boolean
           measurement_unit: 'inches' | 'cm'
           allow_week_skipping: boolean
+          notification_morning: boolean | null
+          notification_afternoon: boolean | null
+          notification_evening: boolean | null
+          notification_morning_time: string | null
+          notification_afternoon_time: string | null
+          notification_evening_time: string | null
           created_at: string
           updated_at: string
         }
@@ -43,6 +49,12 @@ export interface Database {
           profile_complete?: boolean
           measurement_unit?: 'inches' | 'cm'
           allow_week_skipping?: boolean
+          notification_morning?: boolean | null
+          notification_afternoon?: boolean | null
+          notification_evening?: boolean | null
+          notification_morning_time?: string | null
+          notification_afternoon_time?: string | null
+          notification_evening_time?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -61,6 +73,12 @@ export interface Database {
           profile_complete?: boolean
           measurement_unit?: 'inches' | 'cm'
           allow_week_skipping?: boolean
+          notification_morning?: boolean | null
+          notification_afternoon?: boolean | null
+          notification_evening?: boolean | null
+          notification_morning_time?: string | null
+          notification_afternoon_time?: string | null
+          notification_evening_time?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -113,6 +131,7 @@ export interface Database {
           steps: number | null
           daily_win: string | null
           notes: string | null
+          is_fasting: boolean | null
           created_at: string
         }
         Insert: {
@@ -124,6 +143,7 @@ export interface Database {
           steps?: number | null
           daily_win?: string | null
           notes?: string | null
+          is_fasting?: boolean | null
           created_at?: string
         }
         Update: {
@@ -135,6 +155,7 @@ export interface Database {
           steps?: number | null
           daily_win?: string | null
           notes?: string | null
+          is_fasting?: boolean | null
           created_at?: string
         }
       }

@@ -51,6 +51,7 @@ export default function TrackingPage() {
   const [programStartDate, setProgramStartDate] = useState('')
   const [allTrackingData, setAllTrackingData] = useState<any[]>([])
   const [showCalendar, setShowCalendar] = useState(false)
+  const [isFasting, setIsFasting] = useState(false)
 
   const {
     register,
@@ -68,6 +69,7 @@ export default function TrackingPage() {
       steps: 5000,
       daily_win: '',
       notes: '',
+      is_fasting: false,
       meals: [],
       treats: [],
     }
@@ -184,12 +186,16 @@ export default function TrackingPage() {
         // Update hadTreat state based on existing treats
         setHadTreat(treatsData.length > 0)
         
+        // Update fasting state
+        setIsFasting(tracking.is_fasting || false)
+        
         reset({
           hours_sleep: tracking.hours_sleep || 8,
           ounces_water: tracking.ounces_water || 64,
           steps: tracking.steps || 5000,
           daily_win: tracking.daily_win || '',
           notes: tracking.notes || '',
+          is_fasting: tracking.is_fasting || false,
           meals: mealsData,
           treats: treatsData
         })
@@ -199,6 +205,7 @@ export default function TrackingPage() {
         setExistingMeals([])
         setExistingTreats([])
         setHadTreat(false)
+        setIsFasting(false)
         
         reset({
           hours_sleep: 8,
@@ -206,6 +213,7 @@ export default function TrackingPage() {
           steps: 5000,
           daily_win: '',
           notes: '',
+          is_fasting: false,
           meals: [],
           treats: []
         })
@@ -245,6 +253,7 @@ export default function TrackingPage() {
             steps: data.steps,
             daily_win: data.daily_win,
             notes: data.notes,
+            is_fasting: data.is_fasting,
             updated_at: new Date().toISOString(),
           })
           .eq('id', currentTrackingId)
@@ -261,6 +270,7 @@ export default function TrackingPage() {
             steps: data.steps,
             daily_win: data.daily_win,
             notes: data.notes,
+            is_fasting: data.is_fasting,
           })
           .select()
           .single()
@@ -638,13 +648,71 @@ export default function TrackingPage() {
           )}
         </Card>
 
+        {/* Fasting Mode Toggle */}
+        <Card className={cn("transition-all duration-200", isFasting && "border-yellow-300 bg-yellow-50/50")}>
+          <CardHeader>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="fasting-mode"
+                  checked={isFasting}
+                  onCheckedChange={(checked) => {
+                    const fastingValue = !!checked
+                    setIsFasting(fastingValue)
+                    setValue('is_fasting', fastingValue)
+                    
+                    // Clear meals when switching to fasting mode
+                    if (fastingValue) {
+                      // Remove all meals except first two (meal1, meal2)
+                      while (mealFields.length > 2) {
+                        removeMeal(mealFields.length - 1)
+                      }
+                      // Remove snack meals
+                      const snackIndex = mealFields.findIndex(f => f.meal_type === 'snack')
+                      if (snackIndex !== -1) {
+                        removeMeal(snackIndex)
+                      }
+                      // Remove meal3
+                      const meal3Index = mealFields.findIndex(f => f.meal_type === 'meal3')
+                      if (meal3Index !== -1) {
+                        removeMeal(meal3Index)
+                      }
+                    }
+                  }}
+                  className="h-5 w-5"
+                />
+                <div>
+                  <Label htmlFor="fasting-mode" className="text-lg font-semibold cursor-pointer">
+                    Fasting Today
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    {isFasting ? 'Track up to 2 optional meals' : 'Normal eating day'}
+                  </p>
+                </div>
+              </div>
+              
+              {isFasting && (
+                <div className="bg-yellow-100 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-sm text-yellow-800">
+                    🌙 <strong>Fasting Mode:</strong> You can still track up to 2 meals if you break your fast. All meals are optional.
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardHeader>
+        </Card>
+
         {/* Meals & Snacks */}
         <Card>
           <CardHeader className="cursor-pointer" onClick={() => toggleSection('meals')}>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg">Meals & Snacks</CardTitle>
-                <CardDescription className="text-xs">Track each meal and snack</CardDescription>
+                <CardTitle className="text-lg">
+                  {isFasting ? 'Meals (Optional)' : 'Meals & Snacks'}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {isFasting ? 'Track meals if you break your fast today' : 'Track each meal and snack'}
+                </CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 {weekPhase === 'satisfaction' && (
@@ -666,7 +734,7 @@ export default function TrackingPage() {
           </CardHeader>
           {expandedSections.meals && (
             <CardContent className="space-y-4">
-              {(['meal1', 'meal2', 'meal3', 'snack'] as MealType[]).map((mealType) => {
+              {(isFasting ? ['meal1', 'meal2'] : ['meal1', 'meal2', 'meal3', 'snack']).map((mealType) => {
                 const mealIndex = mealFields.findIndex(f => f.meal_type === mealType)
                 const existingMeal = existingMeals.find(m => m.meal_type === mealType)
                 const hasMeal = mealIndex !== -1 || existingMeal
@@ -679,13 +747,19 @@ export default function TrackingPage() {
                         {hasMeal ? (
                           <Input
                             type="text"
-                            placeholder={isSnack ? 'Snack' : `Meal ${mealType.slice(-1)}`}
+                            placeholder={isSnack ? 'Snack' : 
+                              isFasting && mealType === 'meal1' ? 'First Meal (Optional)' :
+                              isFasting && mealType === 'meal2' ? 'Second Meal (Optional)' :
+                              `Meal ${mealType.slice(-1)}`}
                             className="font-semibold border-none bg-transparent p-0 h-auto focus:bg-gray-50 focus:border focus:p-2 focus:h-8"
                             {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.meal_name`)}
                           />
                         ) : (
                           <h3 className="font-semibold">
-                            {isSnack ? 'Snack' : `Meal ${mealType.slice(-1)}`}
+                            {isSnack ? 'Snack' : 
+                              isFasting && mealType === 'meal1' ? 'First Meal (Optional)' :
+                              isFasting && mealType === 'meal2' ? 'Second Meal (Optional)' :
+                              `Meal ${mealType.slice(-1)}`}
                           </h3>
                         )}
                       </div>
@@ -714,7 +788,9 @@ export default function TrackingPage() {
                         }}
                       />
                       <Label htmlFor={`ate-${mealType}`} className="cursor-pointer select-none">
-                        {isSnack ? 'Did you have a snack?' : 'Did you eat this meal?'}
+                        {isSnack ? 'Did you have a snack?' : 
+                          isFasting ? 'Did you break your fast with this meal?' : 
+                          'Did you eat this meal?'}
                       </Label>
                     </div>
 

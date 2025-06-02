@@ -336,9 +336,17 @@ export function DashboardClient({
                 <div className="bg-gray-50 rounded-lg p-3">
                   <div className="flex items-center justify-between">
                     <Activity className="h-5 w-5 text-brand-orange" />
-                    <span className="text-xl font-bold">{todayTracking.meals?.length || 0}/4</span>
+                    <span className="text-xl font-bold">
+                      {todayTracking.is_fasting ? (
+                        <span className="text-yellow-600">🌙</span>
+                      ) : (
+                        `${todayTracking.meals?.length || 0}/${todayTracking.is_fasting ? '2' : '4'}`
+                      )}
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Meals tracked</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {todayTracking.is_fasting ? 'Fasting today' : 'Meals tracked'}
+                  </p>
                 </div>
               </div>
 
