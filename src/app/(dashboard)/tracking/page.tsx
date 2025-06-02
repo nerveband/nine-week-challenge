@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { useToast } from '@/components/ui/use-toast'
 import { FullnessScaleReference } from '@/components/forms/fullness-scale-reference'
 import { WeekCalendar } from '@/components/tracking/week-calendar'
@@ -54,12 +55,15 @@ export default function TrackingPage() {
   const [isFasting, setIsFasting] = useState(false)
   const [trackingCache, setTrackingCache] = useState<Record<string, any>>({})
   const [extraMealCounter, setExtraMealCounter] = useState(1)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false)
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
     watch,
     setValue,
@@ -98,6 +102,11 @@ export default function TrackingPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate, programStartDate])
+
+  // Monitor form changes
+  useEffect(() => {
+    setHasUnsavedChanges(isDirty)
+  }, [isDirty])
 
   const loadUserDataAndTracking = async () => {
     setIsLoading(true)
@@ -400,6 +409,9 @@ export default function TrackingPage() {
         description: 'Daily tracking saved!',
       })
       
+      // Reset unsaved changes state
+      setHasUnsavedChanges(false)
+      
       // Clear cache for current date since data changed
       const currentDateStr = selectedDate.toISOString().split('T')[0]
       setTrackingCache(prev => {
@@ -434,23 +446,75 @@ export default function TrackingPage() {
   }
 
   const handleDateSelect = (date: Date) => {
-    setSelectedDate(date)
+    const navigationAction = () => {
+      setSelectedDate(date)
+    }
+    checkUnsavedChanges(navigationAction)
+  }
+
+  const checkUnsavedChanges = (navigationAction: () => void) => {
+    if (hasUnsavedChanges) {
+      setPendingNavigation(() => navigationAction)
+      setShowSaveConfirmation(true)
+    } else {
+      navigationAction()
+    }
   }
 
   const handlePreviousDay = () => {
-    const previousDay = new Date(selectedDate)
-    previousDay.setDate(selectedDate.getDate() - 1)
-    setSelectedDate(previousDay)
+    const navigationAction = () => {
+      const previousDay = new Date(selectedDate)
+      previousDay.setDate(selectedDate.getDate() - 1)
+      setSelectedDate(previousDay)
+    }
+    checkUnsavedChanges(navigationAction)
   }
 
   const handleNextDay = () => {
-    const nextDay = new Date(selectedDate)
-    nextDay.setDate(selectedDate.getDate() + 1)
-    setSelectedDate(nextDay)
+    const navigationAction = () => {
+      const nextDay = new Date(selectedDate)
+      nextDay.setDate(selectedDate.getDate() + 1)
+      setSelectedDate(nextDay)
+    }
+    checkUnsavedChanges(navigationAction)
   }
 
   const handleTodayClick = () => {
-    setSelectedDate(new Date())
+    const navigationAction = () => {
+      setSelectedDate(new Date())
+    }
+    checkUnsavedChanges(navigationAction)
+  }
+
+  const handleSaveAndContinue = async () => {
+    const form = document.querySelector('form')
+    if (form) {
+      const submitEvent = new Event('submit', { cancelable: true, bubbles: true })
+      form.dispatchEvent(submitEvent)
+      // Wait for form submission to complete
+      setTimeout(() => {
+        if (pendingNavigation) {
+          pendingNavigation()
+          setPendingNavigation(null)
+        }
+        setShowSaveConfirmation(false)
+      }, 500)
+    }
+  }
+
+  const handleDiscardAndContinue = () => {
+    reset() // Reset form to clear unsaved changes
+    setHasUnsavedChanges(false)
+    if (pendingNavigation) {
+      pendingNavigation()
+      setPendingNavigation(null)
+    }
+    setShowSaveConfirmation(false)
+  }
+
+  const handleCancelNavigation = () => {
+    setPendingNavigation(null)
+    setShowSaveConfirmation(false)
   }
 
   const handleWeekChange = (week: number) => {
@@ -527,6 +591,26 @@ export default function TrackingPage() {
   const weekRange = getWeekRangeKey()
   const habitInfo = WEEKLY_HABITS[weekRange as keyof typeof WEEKLY_HABITS]
 
+  const SaveButton = ({ position }: { position: 'top' | 'bottom' }) => (
+    <Button
+      onClick={handleSubmit(onSubmit)}
+      disabled={isSaving || !hasUnsavedChanges}
+      className={cn(
+        "flex items-center gap-2",
+        hasUnsavedChanges 
+          ? "bg-brand-orange hover:bg-brand-orange/90 text-white" 
+          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+      )}
+    >
+      {isSaving ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <Save className="h-4 w-4" />
+      )}
+      {isSaving ? 'Saving...' : hasUnsavedChanges ? 'Save Changes' : 'Saved'}
+    </Button>
+  )
+
   return (
     <div className="space-y-4 pb-20 md:pb-0">
       {/* Header with date and calendar toggle */}
@@ -547,6 +631,7 @@ export default function TrackingPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <SaveButton position="top" />
           <Button
             variant="outline"
             size="sm"
@@ -627,54 +712,73 @@ export default function TrackingPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
         {/* Weekly Habit Card */}
-        <Card className="border-brand-orange bg-brand-orange/5">
-          <CardHeader className="cursor-pointer" onClick={() => toggleSection('habits')}>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-brand-orange" />
-                  This Week&apos;s Focus
-                </CardTitle>
-                <CardDescription className="text-sm mt-1">{habitInfo.title}</CardDescription>
-              </div>
-              {expandedSections.habits ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+        {/* This Week's Focus - Visual Bento Box Design */}
+        <div className="bg-gradient-to-br from-brand-orange/5 to-brand-orange/10 border border-brand-orange/20 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-12 h-12 bg-brand-orange/20 rounded-xl">
+              <AlertCircle className="h-6 w-6 text-brand-orange" />
             </div>
-          </CardHeader>
-          {expandedSections.habits && (
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-semibold text-sm mb-2">Daily Goals:</h4>
-                <ul className="space-y-1">
-                  {habitInfo.goals.map((goal, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                      <span className="text-brand-orange mt-0.5">•</span>
-                      <span>{goal}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-sm mb-2">Instructions:</h4>
-                <ul className="space-y-1">
-                  {habitInfo.instructions.map((instruction, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                      <span className="text-brand-blue mt-0.5">•</span>
-                      <span>{instruction}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">This Week&apos;s Focus</h2>
+              <p className="text-brand-orange font-medium">{habitInfo.title}</p>
+            </div>
+          </div>
 
-              {'newInfo' in habitInfo && habitInfo.newInfo && (
-                <div className="bg-brand-yellow/10 border border-brand-yellow/20 rounded-lg p-4">
-                  <h4 className="font-semibold text-sm mb-1">{habitInfo.newInfo.title}</h4>
-                  <p className="text-sm text-muted-foreground">{habitInfo.newInfo.content}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {/* Goals Bento Box */}
+            <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl p-5 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg">
+                  <Trophy className="h-5 w-5 text-green-600" />
                 </div>
-              )}
-            </CardContent>
+                <h3 className="font-semibold text-gray-900">Daily Goals</h3>
+              </div>
+              <div className="space-y-3">
+                {habitInfo.goals.map((goal, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 bg-green-100 rounded-full mt-0.5">
+                      <CheckCircle2 className="h-3 w-3 text-green-600" />
+                    </div>
+                    <span className="text-sm text-gray-700 leading-relaxed">{goal}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Instructions Bento Box */}
+            <div className="bg-white/80 backdrop-blur-sm border border-white/20 rounded-xl p-5 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg">
+                  <Info className="h-5 w-5 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900">Instructions</h3>
+              </div>
+              <div className="space-y-3">
+                {habitInfo.instructions.map((instruction, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full mt-0.5">
+                      <span className="text-xs font-medium text-blue-600">{index + 1}</span>
+                    </div>
+                    <span className="text-sm text-gray-700 leading-relaxed">{instruction}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* New Info Section - Full Width */}
+          {'newInfo' in habitInfo && habitInfo.newInfo && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-amber-100 rounded-lg">
+                  <AlertCircle className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-amber-900">{habitInfo.newInfo.title}</h3>
+              </div>
+              <p className="text-sm text-amber-800 leading-relaxed pl-13">{habitInfo.newInfo.content}</p>
+            </div>
           )}
-        </Card>
+        </div>
 
         {/* Basic tracking */}
         <Card>
@@ -1456,6 +1560,11 @@ export default function TrackingPage() {
             )}
           </Button>
         </div>
+
+        {/* Bottom Save Button */}
+        <div className="flex justify-center py-6 border-t bg-gray-50/50">
+          <SaveButton position="bottom" />
+        </div>
       </form>
 
       {/* Fullness reference modal for mobile */}
@@ -1486,6 +1595,35 @@ export default function TrackingPage() {
           <FullnessScaleReference />
         </div>
       )}
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <AlertDialog open={showSaveConfirmation} onOpenChange={setShowSaveConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>You have unsaved changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have made changes to your daily tracking. Would you like to save them before navigating away?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelNavigation}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDiscardAndContinue}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Discard Changes
+            </AlertDialogAction>
+            <AlertDialogAction 
+              onClick={handleSaveAndContinue}
+              className="bg-brand-orange hover:bg-brand-orange/90"
+            >
+              Save & Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
