@@ -94,31 +94,6 @@ export function ServiceWorkerRegistration() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast])
 
-  // Install prompt for PWA
-  useEffect(() => {
-    let deferredPrompt: any
-
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault()
-      deferredPrompt = e
-      
-      // Show install prompt after user has used the app for a bit
-      setTimeout(() => {
-        if (deferredPrompt) {
-          toast({
-            title: 'Install Nine Week Challenge',
-            description: 'Add to your home screen for the best experience!'
-          })
-        }
-      }, 30000) // Show after 30 seconds
-    }
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    }
-  }, [toast])
 
   return null
 }

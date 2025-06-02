@@ -53,6 +53,7 @@ export default function TrackingPage() {
   const [showCalendar, setShowCalendar] = useState(false)
   const [isFasting, setIsFasting] = useState(false)
   const [trackingCache, setTrackingCache] = useState<Record<string, any>>({})
+  const [extraMealCounter, setExtraMealCounter] = useState(1)
 
   const {
     register,
@@ -458,13 +459,13 @@ export default function TrackingPage() {
   const addOrUpdateMeal = (mealType: MealType) => {
     const existingIndex = mealFields.findIndex(f => f.meal_type === mealType)
     if (existingIndex === -1) {
-      const defaultMealName = mealType === 'meal1' ? 'Breakfast' :
-                               mealType === 'meal2' ? 'Lunch' :
+      const defaultMealName = mealType === 'meal1' ? (isFasting ? 'Predawn Meal' : 'Breakfast') :
+                               mealType === 'meal2' ? (isFasting ? 'Fast Breaking Meal' : 'Lunch') :
                                mealType === 'meal3' ? 'Dinner' :
                                'Snack'
       
       appendMeal({ 
-        meal_type: mealType,
+        meal_type: mealType as MealType,
         meal_name: defaultMealName,
         ate_meal: true,
         meal_time: '',
@@ -478,6 +479,25 @@ export default function TrackingPage() {
         emotion: ''
       })
     }
+  }
+
+  const addExtraMeal = () => {
+    const extraMealType = `extra_meal_${extraMealCounter}`
+    setExtraMealCounter(prev => prev + 1)
+    
+    appendMeal({ 
+      meal_type: extraMealType as MealType,
+      meal_name: 'Extra Meal',
+      ate_meal: true,
+      meal_time: '',
+      distracted: false,
+      ate_slowly: false,
+      hunger_before: 5,
+      fullness_after: 7,
+      duration_minutes: 20,
+      snack_reason: '',
+      emotion: ''
+    })
   }
 
   if (isLoading) {
@@ -810,8 +830,8 @@ export default function TrackingPage() {
                           <Input
                             type="text"
                             placeholder={isSnack ? 'Snack' : 
-                              isFasting && mealType === 'meal1' ? 'First Meal (Optional)' :
-                              isFasting && mealType === 'meal2' ? 'Second Meal (Optional)' :
+                              isFasting && mealType === 'meal1' ? 'Predawn Meal (Optional)' :
+                              isFasting && mealType === 'meal2' ? 'Fast Breaking Meal' :
                               `Meal ${mealType.slice(-1)}`}
                             className="font-semibold border-none bg-transparent p-0 h-auto focus:bg-gray-50 focus:border focus:p-2 focus:h-8"
                             {...register(`meals.${mealIndex !== -1 ? mealIndex : mealFields.length}.meal_name`)}
@@ -819,8 +839,8 @@ export default function TrackingPage() {
                         ) : (
                           <h3 className="font-semibold">
                             {isSnack ? 'Snack' : 
-                              isFasting && mealType === 'meal1' ? 'First Meal (Optional)' :
-                              isFasting && mealType === 'meal2' ? 'Second Meal (Optional)' :
+                              isFasting && mealType === 'meal1' ? 'Predawn Meal (Optional)' :
+                              isFasting && mealType === 'meal2' ? 'Fast Breaking Meal' :
                               `Meal ${mealType.slice(-1)}`}
                           </h3>
                         )}
@@ -1060,6 +1080,151 @@ export default function TrackingPage() {
                   </div>
                 )
               })}
+
+              {/* Extra meals */}
+              {mealFields.filter(meal => meal.meal_type.startsWith('extra_meal_')).map((meal, index) => {
+                const actualMealIndex = mealFields.findIndex(f => f.meal_type === meal.meal_type)
+                
+                return (
+                  <div key={meal.meal_type} className="border border-dashed border-brand-orange rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <Input
+                          type="text"
+                          placeholder="Extra Meal"
+                          className="font-semibold border-none bg-transparent p-0 h-auto focus:bg-gray-50 focus:border focus:p-2 focus:h-8"
+                          {...register(`meals.${actualMealIndex}.meal_name`)}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-brand-green" />
+                        <button
+                          type="button"
+                          onClick={() => removeMeal(actualMealIndex)}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {/* Meal Time */}
+                      <div>
+                        <Label className="text-sm font-medium">Time</Label>
+                        <Input
+                          type="time"
+                          {...register(`meals.${actualMealIndex}.meal_time`)}
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Distracted checkbox */}
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`distracted-${meal.meal_type}`}
+                          {...register(`meals.${actualMealIndex}.distracted`)}
+                        />
+                        <Label htmlFor={`distracted-${meal.meal_type}`} className="text-sm cursor-pointer select-none">
+                          Was I distracted while eating?
+                        </Label>
+                      </div>
+
+                      {/* Hunger level before eating */}
+                      {weekPhase !== 'basic' && (
+                        <div>
+                          <Label className="text-sm font-medium">How hungry were you before eating? (1-10)</Label>
+                          <Slider
+                            min={1}
+                            max={10}
+                            step={1}
+                            className="mt-2"
+                            defaultValue={[5]}
+                            onValueChange={(value) => setValue(`meals.${actualMealIndex}.hunger_before`, value[0])}
+                          />
+                        </div>
+                      )}
+
+                      {/* Ate slowly checkbox */}
+                      {weekPhase !== 'basic' && (
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`slowly-${meal.meal_type}`}
+                            {...register(`meals.${actualMealIndex}.ate_slowly`)}
+                          />
+                          <Label htmlFor={`slowly-${meal.meal_type}`} className="text-sm cursor-pointer select-none">
+                            Did you eat more slowly?
+                          </Label>
+                        </div>
+                      )}
+
+                      {/* Duration */}
+                      <div>
+                        <Label className="text-sm font-medium">How long did you eat for? (minutes)</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="120"
+                          {...register(`meals.${actualMealIndex}.duration_minutes`, { valueAsNumber: true })}
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Fullness after eating */}
+                      {weekPhase === 'satisfaction' && (
+                        <div>
+                          <Label className="text-sm font-medium">How full were you after eating? (1-10)</Label>
+                          <Slider
+                            min={1}
+                            max={10}
+                            step={1}
+                            className="mt-2"
+                            defaultValue={[7]}
+                            onValueChange={(value) => setValue(`meals.${actualMealIndex}.fullness_after`, value[0])}
+                          />
+                        </div>
+                      )}
+
+                      {/* Emotion after eating */}
+                      <div>
+                        <Label className="text-sm font-medium">How did you feel after eating?</Label>
+                        <Select onValueChange={(value) => setValue(`meals.${actualMealIndex}.emotion`, value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select emotion" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="satisfied">Satisfied</SelectItem>
+                            <SelectItem value="happy">Happy</SelectItem>
+                            <SelectItem value="neutral">Neutral</SelectItem>
+                            <SelectItem value="guilty">Guilty</SelectItem>
+                            <SelectItem value="overfull">Too full</SelectItem>
+                            <SelectItem value="disappointed">Disappointed</SelectItem>
+                            <SelectItem value="energized">Energized</SelectItem>
+                            <SelectItem value="sluggish">Sluggish</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Hidden fields */}
+                      <>
+                        <input type="hidden" {...register(`meals.${actualMealIndex}.meal_type`)} value={meal.meal_type} />
+                        <input type="hidden" {...register(`meals.${actualMealIndex}.ate_meal`)} value="true" />
+                      </>
+                    </div>
+                  </div>
+                )
+              })}
+
+              {/* Add Extra Meal Button */}
+              <button
+                type="button"
+                onClick={addExtraMeal}
+                className="w-full border-2 border-dashed border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white transition-colors rounded-lg p-4 flex items-center justify-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add Extra Meal
+              </button>
+
             </CardContent>
           )}
         </Card>
