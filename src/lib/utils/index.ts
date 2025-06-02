@@ -33,8 +33,22 @@ export function calculateAge(birthdate: string | Date): number {
   return age
 }
 
+// Helper function to parse dates consistently in local timezone
+function parseLocalDate(dateInput: string | Date): Date {
+  if (dateInput instanceof Date) return dateInput
+  
+  // For date strings in YYYY-MM-DD format, parse as local timezone
+  // by adding time component to avoid UTC interpretation
+  const dateStr = dateInput.toString()
+  if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return new Date(dateStr + 'T00:00:00')
+  }
+  
+  return new Date(dateInput)
+}
+
 export function getCurrentWeek(startDate: string | Date): number {
-  const start = new Date(startDate)
+  const start = parseLocalDate(startDate)
   const today = new Date()
   
   // Set both dates to start of day for accurate comparison
@@ -54,8 +68,8 @@ export function getCurrentWeek(startDate: string | Date): number {
 }
 
 export function getWeekForDate(startDate: string | Date, targetDate: string | Date): number {
-  const start = new Date(startDate)
-  const target = new Date(targetDate)
+  const start = parseLocalDate(startDate)
+  const target = parseLocalDate(targetDate)
   
   // Set both dates to start of day for accurate comparison
   start.setHours(0, 0, 0, 0)
@@ -74,7 +88,7 @@ export function getWeekForDate(startDate: string | Date, targetDate: string | Da
 }
 
 export function getWeekDateRange(startDate: string | Date, week: number): { start: Date; end: Date } {
-  const programStart = new Date(startDate)
+  const programStart = parseLocalDate(startDate)
   const weekStart = new Date(programStart)
   weekStart.setDate(programStart.getDate() + (week - 1) * 7)
   
@@ -123,7 +137,7 @@ export function isToday(date: Date): boolean {
 }
 
 export function isWithinProgramRange(startDate: string | Date, targetDate: Date): boolean {
-  const start = new Date(startDate)
+  const start = parseLocalDate(startDate)
   const maxEndDate = new Date(start)
   maxEndDate.setDate(start.getDate() + (9 * 7) - 1) // 9 weeks from start
   
@@ -161,7 +175,7 @@ export function getStreakDays(trackingData: Array<{ date: string }>): number {
   if (!trackingData || trackingData.length === 0) return 0
   
   const sortedDates = trackingData
-    .map(t => new Date(t.date))
+    .map(t => parseLocalDate(t.date))
     .sort((a, b) => b.getTime() - a.getTime())
   
   let streak = 0
