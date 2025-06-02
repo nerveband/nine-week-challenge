@@ -11,9 +11,9 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/components/ui/use-toast'
 import { measurementSchema, type MeasurementInput } from '@/lib/validations'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Loader2, Ruler, TrendingDown, Calendar, AlertCircle, Eye, Scale } from 'lucide-react'
+import { Loader2, Ruler, TrendingDown, Calendar, AlertCircle, Eye, Scale, Save } from 'lucide-react'
 import type { Database } from '@/types/database'
-import { getCurrentWeek, isMeasurementWeek, MEASUREMENT_WEEKS } from '@/lib/utils'
+import { getCurrentWeek, isMeasurementWeek, MEASUREMENT_WEEKS, cn } from '@/lib/utils'
 import { MeasurementsCalendar } from '@/components/measurements/measurements-calendar'
 import Image from 'next/image'
 
@@ -61,11 +61,12 @@ export default function MeasurementsPage() {
   const [averages, setAverages] = useState<MeasurementAverage>({})
   const [programStartDate, setProgramStartDate] = useState('')
   const [showCalendar, setShowCalendar] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
     setValue,
   } = useForm<MeasurementInput>({
@@ -81,6 +82,11 @@ export default function MeasurementsPage() {
     calculateAverages()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [readings])
+
+  // Monitor form changes
+  useEffect(() => {
+    setHasUnsavedChanges(isDirty)
+  }, [isDirty])
 
   const loadUserDataAndMeasurements = async () => {
     setIsLoading(true)
@@ -103,7 +109,7 @@ export default function MeasurementsPage() {
         const week = getCurrentWeek(profile.program_start_date)
         setCurrentWeek(week)
         setSelectedWeek(week)
-        setCanMeasure(isMeasurementWeek(week))
+        setCanMeasure(true) // Allow measurements in any week
       }
 
       // Get all measurements
@@ -180,15 +186,6 @@ export default function MeasurementsPage() {
   }
 
   const onSubmit = async (data: MeasurementInput) => {
-    if (!canMeasure) {
-      toast({
-        title: 'Not a measurement week',
-        description: `Measurements are only taken on weeks ${MEASUREMENT_WEEKS.join(', ')}`,
-        variant: 'destructive',
-      })
-      return
-    }
-
     setIsSaving(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -234,6 +231,9 @@ export default function MeasurementsPage() {
         description: 'Measurements saved!',
       })
       
+      // Reset unsaved changes state
+      setHasUnsavedChanges(false)
+      
       // Reload data
       await loadUserDataAndMeasurements()
     } catch (error) {
@@ -263,6 +263,26 @@ export default function MeasurementsPage() {
     return { difference, percentage }
   }
 
+  const SaveButton = ({ position }: { position: 'top' | 'bottom' }) => (
+    <Button
+      onClick={handleSubmit(onSubmit)}
+      disabled={isSaving || !hasUnsavedChanges}
+      className={cn(
+        "flex items-center gap-2",
+        hasUnsavedChanges 
+          ? "bg-brand-orange hover:bg-brand-orange/90 text-white" 
+          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+      )}
+    >
+      {isSaving ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <Save className="h-4 w-4" />
+      )}
+      {isSaving ? 'Saving...' : hasUnsavedChanges ? 'Save Changes' : 'Saved'}
+    </Button>
+  )
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -282,15 +302,18 @@ export default function MeasurementsPage() {
               Week {selectedWeek} • {isMeasurementWeek(selectedWeek) ? '📏 Measurement Week!' : `Next measurement in week ${MEASUREMENT_WEEKS.find(w => w > selectedWeek) || 9}`}
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowCalendar(!showCalendar)}
-            className="flex items-center gap-2"
-          >
-            <Calendar className="h-4 w-4" />
-            {showCalendar ? 'Hide' : 'Schedule'}
-          </Button>
+          <div className="flex items-center gap-2">
+            <SaveButton position="top" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCalendar(!showCalendar)}
+              className="flex items-center gap-2"
+            >
+              <Calendar className="h-4 w-4" />
+              {showCalendar ? 'Hide' : 'Schedule'}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -302,7 +325,7 @@ export default function MeasurementsPage() {
           selectedWeek={selectedWeek}
           onWeekSelect={(week) => {
             setSelectedWeek(week)
-            setCanMeasure(isMeasurementWeek(week))
+            setCanMeasure(true) // Allow measurements in any week
           }}
           measurementData={previousMeasurements}
           className="animate-fade-in"
@@ -321,7 +344,7 @@ export default function MeasurementsPage() {
             <p className="text-sm sm:text-base">
               Measurements are taken on weeks {MEASUREMENT_WEEKS.join(', ')}. 
               <br className="sm:hidden" />
-              <span className="font-medium">Check back in week {MEASUREMENT_WEEKS.find(w => w > currentWeek) || 9}!</span>
+              <span className="font-medium"> Check back in week {MEASUREMENT_WEEKS.find(w => w > currentWeek) || 9}!</span>
             </p>
           </CardContent>
         </Card>
@@ -553,7 +576,7 @@ export default function MeasurementsPage() {
               type="submit" 
               variant="brand" 
               className="w-full h-12 shadow-lg"
-              disabled={isSaving || !canMeasure}
+              disabled={isSaving}
             >
               {isSaving ? (
                 <>
@@ -568,7 +591,7 @@ export default function MeasurementsPage() {
 
           {/* Desktop save button */}
           <div className="hidden md:flex justify-end">
-            <Button type="submit" variant="brand" size="lg" disabled={isSaving || !canMeasure}>
+            <Button type="submit" variant="brand" size="lg" disabled={isSaving}>
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -578,6 +601,11 @@ export default function MeasurementsPage() {
                 'Save Measurements'
               )}
             </Button>
+          </div>
+
+          {/* Bottom Save Button */}
+          <div className="flex justify-center py-6 border-t bg-gray-50/50">
+            <SaveButton position="bottom" />
           </div>
         </form>
       )}

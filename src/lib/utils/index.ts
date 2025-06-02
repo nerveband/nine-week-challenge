@@ -36,18 +36,40 @@ export function calculateAge(birthdate: string | Date): number {
 export function getCurrentWeek(startDate: string | Date): number {
   const start = new Date(startDate)
   const today = new Date()
-  const diffTime = Math.abs(today.getTime() - start.getTime())
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  const week = Math.ceil(diffDays / 7)
+  
+  // Set both dates to start of day for accurate comparison
+  start.setHours(0, 0, 0, 0)
+  today.setHours(0, 0, 0, 0)
+  
+  // Calculate difference in days (can be negative if today is before start)
+  const diffTime = today.getTime() - start.getTime()
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  
+  // If today is before start date, return 0 or 1
+  if (diffDays < 0) return 1
+  
+  // Week calculation: day 0-6 = week 1, day 7-13 = week 2, etc.
+  const week = Math.floor(diffDays / 7) + 1
   return week // Allow tracking beyond week 9
 }
 
 export function getWeekForDate(startDate: string | Date, targetDate: string | Date): number {
   const start = new Date(startDate)
   const target = new Date(targetDate)
-  const diffTime = Math.abs(target.getTime() - start.getTime())
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  const week = Math.ceil(diffDays / 7)
+  
+  // Set both dates to start of day for accurate comparison
+  start.setHours(0, 0, 0, 0)
+  target.setHours(0, 0, 0, 0)
+  
+  // Calculate difference in days (can be negative if target is before start)
+  const diffTime = target.getTime() - start.getTime()
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  
+  // If target is before start date, return 1
+  if (diffDays < 0) return 1
+  
+  // Week calculation: day 0-6 = week 1, day 7-13 = week 2, etc.
+  const week = Math.floor(diffDays / 7) + 1
   return week
 }
 

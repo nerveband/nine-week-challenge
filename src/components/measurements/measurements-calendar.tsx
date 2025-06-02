@@ -106,8 +106,7 @@ export function MeasurementsCalendar({
                 {/* Current week indicator */}
                 {isCurrent && (
                   <Badge 
-                    variant="outline" 
-                    className="absolute -top-2 -right-2 text-xs px-1"
+                    className="absolute -top-2 -right-2 text-xs px-2 py-1 bg-brand-orange text-white border-none shadow-sm"
                   >
                     Current
                   </Badge>
