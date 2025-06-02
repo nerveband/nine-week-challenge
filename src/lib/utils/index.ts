@@ -4,6 +4,7 @@ import { WEEK_PHASES } from '@/types'
 
 export * from './export'
 export * from './measurements'
+export * from './image-compression'
 
 export const MEASUREMENT_WEEKS = [1, 3, 5, 7, 9]
 

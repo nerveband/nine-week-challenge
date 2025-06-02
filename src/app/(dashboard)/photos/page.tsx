@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Camera, Upload, Loader2, Calendar, Image as ImageIcon, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Camera, Upload, Loader2, Calendar, Image as ImageIcon, X, ChevronLeft, ChevronRight, Zap } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { getCurrentWeek, formatDate, formatDateShort } from '@/lib/utils'
+import { compressImage, shouldCompressImage, getCompressionInfo, formatFileSize } from '@/lib/utils'
 import Image from 'next/image'
 
 interface Photo {
@@ -37,6 +38,7 @@ export default function PhotosPage() {
   const [selectedPhotoType, setSelectedPhotoType] = useState<Photo['photo_type']>('front')
   const [viewMode, setViewMode] = useState<'upload' | 'timeline'>('upload')
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
+  const [compressionInfo, setCompressionInfo] = useState<string>('')
 
   useEffect(() => {
     loadPhotos()
@@ -112,28 +114,63 @@ export default function PhotosPage() {
       return
     }
 
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size (10MB limit - we'll compress large images)
+    if (file.size > 10 * 1024 * 1024) {
       toast({
         title: 'File too large',
-        description: 'Please upload an image smaller than 5MB.',
+        description: 'Please upload an image smaller than 10MB.',
         variant: 'destructive',
       })
       return
     }
 
     setIsUploading(true)
+    setCompressionInfo('')
+    
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`
+      let fileToUpload: File | Blob = file
+      let fileName = `${user.id}/${Date.now()}`
+
+      // Compress image if it's large or if it's not already optimized
+      if (shouldCompressImage(file)) {
+        try {
+          const compressedBlob = await compressImage(file, {
+            maxWidth: 1200,
+            maxHeight: 1200,
+            quality: 0.8,
+            format: 'jpeg'
+          })
+
+          fileToUpload = compressedBlob
+          fileName += '.jpg' // Always use .jpg for compressed images
+
+          const compressionStats = getCompressionInfo(file.size, compressedBlob.size)
+          setCompressionInfo(
+            `Compressed from ${formatFileSize(compressionStats.originalSize)} to ${formatFileSize(compressionStats.compressedSize)} (${compressionStats.ratio}% reduction)`
+          )
+
+          toast({
+            title: 'Image compressed',
+            description: `Reduced size by ${compressionStats.ratio}% for faster upload`,
+          })
+        } catch (compressionError) {
+          console.warn('Compression failed, uploading original:', compressionError)
+          // Fall back to original file if compression fails
+          fileName += `.${file.name.split('.').pop()}`
+        }
+      } else {
+        // Use original file extension for small images
+        fileName += `.${file.name.split('.').pop()}`
+        setCompressionInfo('No compression needed - image is already optimized')
+      }
       
+      // Upload to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('photos')
-        .upload(fileName, file)
+        .upload(fileName, fileToUpload)
 
       if (uploadError) throw uploadError
 
@@ -336,6 +373,19 @@ export default function PhotosPage() {
                     </>
                   )}
                 </Button>
+                
+                {/* Compression info */}
+                {compressionInfo && (
+                  <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground bg-green-50 px-3 py-2 rounded-lg">
+                    <Zap className="h-3 w-3 text-green-600" />
+                    <span>{compressionInfo}</span>
+                  </div>
+                )}
+                
+                {/* Compression note */}
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Large images are automatically compressed to save storage space
+                </p>
               </div>
 
               {/* Today's Photos */}
