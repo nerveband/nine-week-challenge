@@ -17,9 +17,9 @@ import { WeekCalendar } from '@/components/tracking/week-calendar'
 import { TrackingActions } from '@/components/tracking/tracking-actions'
 import { dailyTrackingSchema, mealSchema, treatSchema, type DailyTrackingInput, type MealInput, type TreatInput } from '@/lib/validations'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Loader2, Moon, Droplets, Footprints, Trophy, Clock, Utensils, Cookie, Plus, X, Save, ChevronDown, ChevronUp, CheckCircle2, Info, AlertCircle, Calendar } from 'lucide-react'
+import { Loader2, Moon, Droplets, Footprints, Trophy, Clock, Utensils, Cookie, Plus, X, Save, ChevronDown, ChevronUp, CheckCircle2, Info, AlertCircle, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Database } from '@/types/database'
-import { getCurrentWeek, getWeekPhase, getWeekForDate, formatDateShort, isToday, cn } from '@/lib/utils'
+import { getCurrentWeek, getWeekPhase, getWeekForDate, formatDateShort, formatDate, isToday, cn } from '@/lib/utils'
 import { TREAT_CATEGORIES, WEEKLY_HABITS, type MealType } from '@/types'
 
 interface ExtendedDailyTrackingInput extends DailyTrackingInput {
@@ -437,6 +437,22 @@ export default function TrackingPage() {
     setSelectedDate(date)
   }
 
+  const handlePreviousDay = () => {
+    const previousDay = new Date(selectedDate)
+    previousDay.setDate(selectedDate.getDate() - 1)
+    setSelectedDate(previousDay)
+  }
+
+  const handleNextDay = () => {
+    const nextDay = new Date(selectedDate)
+    nextDay.setDate(selectedDate.getDate() + 1)
+    setSelectedDate(nextDay)
+  }
+
+  const handleTodayClick = () => {
+    setSelectedDate(new Date())
+  }
+
   const handleWeekChange = (week: number) => {
     // Navigate to the first day of the selected week
     if (programStartDate) {
@@ -519,7 +535,7 @@ export default function TrackingPage() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Daily Tracking</h1>
           <div className="flex items-center gap-2 mt-1">
             <p className="text-sm text-muted-foreground">
-              {isToday(selectedDate) ? 'Today' : formatDateShort(selectedDate)} • Week {currentWeek}
+              {isToday(selectedDate) ? `Today, ${formatDate(selectedDate)}` : formatDate(selectedDate)} • Week {currentWeek}
               {currentWeek > 9 && ' (Extended)'}
             </p>
             {trackingId && (
@@ -547,6 +563,52 @@ export default function TrackingPage() {
             onProgramRestart={handleProgramRestart}
             showRestartOption={currentWeek > 9}
           />
+        </div>
+      </div>
+
+      {/* Date Navigation Controls */}
+      <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePreviousDay}
+            className="flex items-center gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleNextDay}
+            className="flex items-center gap-1"
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">
+            {formatDate(selectedDate)}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {isToday(selectedDate) ? 'Today' : `${Math.abs(Math.round((new Date().getTime() - selectedDate.getTime()) / (1000 * 60 * 60 * 24)))} day${Math.abs(Math.round((new Date().getTime() - selectedDate.getTime()) / (1000 * 60 * 60 * 24))) !== 1 ? 's' : ''} ${selectedDate < new Date() ? 'ago' : 'from now'}`}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {!isToday(selectedDate) && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleTodayClick}
+              className="bg-brand-orange hover:bg-brand-orange/90"
+            >
+              Today
+            </Button>
+          )}
         </div>
       </div>
 

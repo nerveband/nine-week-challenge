@@ -36,6 +36,24 @@ npm run lint
 npm run build
 ```
 
+### Pre-deployment Workflow (MANDATORY)
+```bash
+# ALWAYS run these commands before pushing to prevent deployment failures:
+
+# 1. Type check to catch TypeScript errors
+npm run type-check
+
+# 2. Build locally to catch compilation issues
+npm run build
+
+# 3. Only after successful build, commit and push
+git add .
+git commit -m "your commit message"
+git push origin main
+```
+
+**CRITICAL**: Never push without running `npm run build` first. Vercel deployments will fail if there are build errors that could have been caught locally.
+
 ### Testing (when implemented)
 ```bash
 # Run tests
