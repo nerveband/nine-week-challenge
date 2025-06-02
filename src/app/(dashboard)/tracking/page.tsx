@@ -19,7 +19,7 @@ import { dailyTrackingSchema, mealSchema, treatSchema, type DailyTrackingInput, 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Loader2, Moon, Droplets, Footprints, Trophy, Clock, Utensils, Cookie, Plus, X, Save, ChevronDown, ChevronUp, CheckCircle2, Info, AlertCircle, Calendar } from 'lucide-react'
 import type { Database } from '@/types/database'
-import { getCurrentWeek, getWeekPhase, getWeekForDate, formatDateShort, isToday } from '@/lib/utils'
+import { getCurrentWeek, getWeekPhase, getWeekForDate, formatDateShort, isToday, cn } from '@/lib/utils'
 import { TREAT_CATEGORIES, WEEKLY_HABITS, type MealType } from '@/types'
 
 interface ExtendedDailyTrackingInput extends DailyTrackingInput {
