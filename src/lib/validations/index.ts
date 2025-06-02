@@ -21,7 +21,8 @@ export const profileSchema = z.object({
   height_feet: z.number().min(3).max(8).optional(),
   height_inches: z.number().min(0).max(11).optional(),
   starting_weight: z.number().min(50).max(500).optional(),
-  goal_weight: z.number().min(50).max(500).optional()
+  goal_weight: z.number().min(50).max(500).optional(),
+  location: z.string().optional()
 })
 
 export const measurementSchema = z.object({

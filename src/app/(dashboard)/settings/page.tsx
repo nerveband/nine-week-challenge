@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Settings, RefreshCw, Calendar, Ruler, SkipForward, AlertTriangle, Loader2, Bell } from 'lucide-react'
+import { Settings, RefreshCw, Calendar, Ruler, SkipForward, AlertTriangle, Loader2, Bell, Key } from 'lucide-react'
 import type { Database } from '@/types/database'
 import { formatDate } from '@/lib/utils'
 
@@ -35,6 +36,9 @@ export default function SettingsPage() {
     eveningTime: '18:00'
   })
   const [newStartDate, setNewStartDate] = useState('')
+  const [showPasswordChange, setShowPasswordChange] = useState(false)
+  const [passwordData, setPasswordData] = useState({ password: '', confirmPassword: '' })
+  const [passwordError, setPasswordError] = useState('')
 
   useEffect(() => {
     loadUserSettings()
@@ -159,6 +163,46 @@ export default function SettingsPage() {
         description: 'Failed to reset program',
         variant: 'destructive',
       })
+    }
+  }
+
+  const handlePasswordChange = async () => {
+    setPasswordError('')
+    
+    if (passwordData.password.length < 6) {
+      setPasswordError('Password must be at least 6 characters')
+      return
+    }
+    
+    if (passwordData.password !== passwordData.confirmPassword) {
+      setPasswordError('Passwords do not match')
+      return
+    }
+    
+    setIsSaving(true)
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.password
+      })
+      
+      if (error) throw error
+      
+      toast({
+        title: 'Success',
+        description: 'Password updated successfully!',
+      })
+      
+      setShowPasswordChange(false)
+      setPasswordData({ password: '', confirmPassword: '' })
+    } catch (error) {
+      console.error('Error changing password:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to update password',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -441,6 +485,85 @@ export default function SettingsPage() {
               </AlertDialog>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Account Security */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Key className="h-5 w-5 text-brand-yellow" />
+            Account Security
+          </CardTitle>
+          <CardDescription>Manage your password and security settings</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!showPasswordChange ? (
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowPasswordChange(true)}
+              className="w-full sm:w-auto"
+            >
+              Change Password
+            </Button>
+          ) : (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">New Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter new password"
+                  value={passwordData.password}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, password: e.target.value }))}
+                  className="h-12"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  className="h-12"
+                />
+              </div>
+              {passwordError && (
+                <p className="text-xs text-red-600">{passwordError}</p>
+              )}
+              <div className="flex gap-2">
+                <Button 
+                  type="button"
+                  variant="brand"
+                  onClick={handlePasswordChange}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    'Update Password'
+                  )}
+                </Button>
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowPasswordChange(false)
+                    setPasswordData({ password: '', confirmPassword: '' })
+                    setPasswordError('')
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

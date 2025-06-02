@@ -52,6 +52,7 @@ export default function TrackingPage() {
   const [allTrackingData, setAllTrackingData] = useState<any[]>([])
   const [showCalendar, setShowCalendar] = useState(false)
   const [isFasting, setIsFasting] = useState(false)
+  const [trackingCache, setTrackingCache] = useState<Record<string, any>>({})
 
   const {
     register,
@@ -106,30 +107,31 @@ export default function TrackingPage() {
         return
       }
 
-      // Get user profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('program_start_date')
-        .eq('id', user.id)
-        .single()
+      // Parallel queries for better performance
+      const [profileResult, allTrackingResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('program_start_date')
+          .eq('id', user.id)
+          .single(),
+        supabase
+          .from('daily_tracking')
+          .select('date')
+          .eq('user_id', user.id)
+          .order('date', { ascending: false })
+          .limit(100) // Limit to last 100 entries for performance
+      ])
 
-      if (profile) {
-        setProgramStartDate(profile.program_start_date)
-        const week = getCurrentWeek(profile.program_start_date)
+      if (profileResult.data) {
+        setProgramStartDate(profileResult.data.program_start_date)
+        const week = getCurrentWeek(profileResult.data.program_start_date)
         setCurrentWeek(week)
         const phase = getWeekPhase(week)
         setWeekPhase(phase.phase)
       }
 
-      // Get all tracking data for calendar
-      const { data: allTracking } = await supabase
-        .from('daily_tracking')
-        .select('date')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
-
-      if (allTracking) {
-        setAllTrackingData(allTracking)
+      if (allTrackingResult.data) {
+        setAllTrackingData(allTrackingResult.data)
       }
 
     } catch (error) {
@@ -145,6 +147,55 @@ export default function TrackingPage() {
       if (!user) return
 
       const dateStr = date.toISOString().split('T')[0]
+      
+      // Check cache first
+      if (trackingCache[dateStr]) {
+        const tracking = trackingCache[dateStr]
+        setTrackingId(tracking.id)
+        setExistingMeals(tracking.meals || [])
+        setExistingTreats(tracking.treats || [])
+        setIsFasting(tracking.is_fasting || false)
+        
+        // Load form data from cache
+        const mealsData = (tracking.meals || []).map((meal: any) => ({
+          meal_type: meal.meal_type,
+          meal_name: meal.meal_name || (meal.meal_type === 'snack' ? 'Snack' : 
+                     meal.meal_type === 'meal1' ? 'Breakfast' :
+                     meal.meal_type === 'meal2' ? 'Lunch' :
+                     meal.meal_type === 'meal3' ? 'Dinner' : 'Meal'),
+          ate_meal: meal.ate_meal !== false,
+          meal_time: meal.meal_time || '',
+          distracted: meal.distracted || false,
+          ate_slowly: meal.ate_slowly || false,
+          hunger_minutes: meal.hunger_minutes || 0,
+          hunger_before: meal.hunger_before || 5,
+          fullness_after: meal.fullness_after || 7,
+          duration_minutes: meal.duration_minutes || 20,
+          snack_reason: meal.snack_reason || '',
+          emotion: meal.emotion || ''
+        }))
+        
+        const treatsData = (tracking.treats || []).map((treat: any) => ({
+          treat_type: treat.treat_type,
+          quantity: treat.quantity || 1,
+          description: treat.description || ''
+        }))
+        
+        setHadTreat(treatsData.length > 0)
+        
+        reset({
+          hours_sleep: tracking.hours_sleep || 8,
+          ounces_water: tracking.ounces_water || 64,
+          steps: tracking.steps || 5000,
+          daily_win: tracking.daily_win || '',
+          notes: tracking.notes || '',
+          is_fasting: tracking.is_fasting || false,
+          meals: mealsData,
+          treats: treatsData
+        })
+        return
+      }
+
       const { data: tracking } = await supabase
         .from('daily_tracking')
         .select('*, meals(*), treats(*)')
@@ -153,6 +204,9 @@ export default function TrackingPage() {
         .single()
 
       if (tracking) {
+        // Cache the data
+        setTrackingCache(prev => ({ ...prev, [dateStr]: tracking }))
+        
         setTrackingId(tracking.id)
         setExistingMeals(tracking.meals || [])
         setExistingTreats(tracking.treats || [])
@@ -343,6 +397,14 @@ export default function TrackingPage() {
       toast({
         title: 'Success',
         description: 'Daily tracking saved!',
+      })
+      
+      // Clear cache for current date since data changed
+      const dateStr = selectedDate.toISOString().split('T')[0]
+      setTrackingCache(prev => {
+        const newCache = { ...prev }
+        delete newCache[dateStr]
+        return newCache
       })
       
       // Reload data

@@ -68,6 +68,7 @@ export default function ProfilePage() {
           height_inches: profile.height_inches || undefined,
           starting_weight: profile.starting_weight || undefined,
           goal_weight: profile.goal_weight || undefined,
+          location: profile.location || '',
         })
       }
     } catch (error) {
@@ -95,6 +96,7 @@ export default function ProfilePage() {
           height_inches: data.height_inches,
           starting_weight: data.starting_weight,
           goal_weight: data.goal_weight,
+          location: data.location,
           profile_complete: true,
           updated_at: new Date().toISOString(),
         })
@@ -235,6 +237,23 @@ export default function ProfilePage() {
                   </p>
                 )}
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="location" className="text-sm font-medium">Location (Optional)</Label>
+              <Input
+                id="location"
+                type="text"
+                placeholder="City, State/Country or Timezone"
+                className="h-12"
+                {...register('location')}
+              />
+              {errors.location && (
+                <p className="text-xs text-red-600">{errors.location.message}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                This helps us provide better recommendations and analytics
+              </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
