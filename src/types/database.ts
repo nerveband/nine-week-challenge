@@ -133,6 +133,7 @@ export interface Database {
           notes: string | null
           is_fasting: boolean | null
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
@@ -145,6 +146,7 @@ export interface Database {
           notes?: string | null
           is_fasting?: boolean | null
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
@@ -157,13 +159,14 @@ export interface Database {
           notes?: string | null
           is_fasting?: boolean | null
           created_at?: string
+          updated_at?: string
         }
       }
       meals: {
         Row: {
           id: string
           daily_tracking_id: string
-          meal_type: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          meal_type: string // Now supports extra meals like 'extra_meal_1', 'extra_meal_2', etc.
           meal_name: string | null
           ate_meal: boolean | null
           meal_time: string | null
@@ -180,7 +183,7 @@ export interface Database {
         Insert: {
           id?: string
           daily_tracking_id: string
-          meal_type: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          meal_type: string // Now supports extra meals like 'extra_meal_1', 'extra_meal_2', etc.
           meal_name?: string | null
           ate_meal?: boolean | null
           meal_time?: string | null
@@ -197,7 +200,7 @@ export interface Database {
         Update: {
           id?: string
           daily_tracking_id?: string
-          meal_type?: 'meal1' | 'meal2' | 'meal3' | 'snack'
+          meal_type?: string // Now supports extra meals like 'extra_meal_1', 'extra_meal_2', etc.
           meal_name?: string | null
           ate_meal?: boolean | null
           meal_time?: string | null
