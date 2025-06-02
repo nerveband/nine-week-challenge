@@ -400,10 +400,10 @@ export default function TrackingPage() {
       })
       
       // Clear cache for current date since data changed
-      const dateStr = selectedDate.toISOString().split('T')[0]
+      const currentDateStr = selectedDate.toISOString().split('T')[0]
       setTrackingCache(prev => {
         const newCache = { ...prev }
-        delete newCache[dateStr]
+        delete newCache[currentDateStr]
         return newCache
       })
       
@@ -796,7 +796,7 @@ export default function TrackingPage() {
           </CardHeader>
           {expandedSections.meals && (
             <CardContent className="space-y-4">
-              {(isFasting ? ['meal1', 'meal2'] : ['meal1', 'meal2', 'meal3', 'snack']).map((mealType) => {
+              {(isFasting ? ['meal1', 'meal2'] as const : ['meal1', 'meal2', 'meal3', 'snack'] as const).map((mealType) => {
                 const mealIndex = mealFields.findIndex(f => f.meal_type === mealType)
                 const existingMeal = existingMeals.find(m => m.meal_type === mealType)
                 const hasMeal = mealIndex !== -1 || existingMeal
